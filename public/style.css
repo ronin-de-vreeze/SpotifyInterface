@@ -1,0 +1,31 @@
+.track.included {
+    color: green;
+}
+
+.playlist.included {
+    color: red;
+}
+
+
+#refresh-popup {
+    position: fixed;
+    left: 25%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 40px;
+    text-align: center;
+    padding: 1rem;
+    color: white;
+    border-radius: 100px;
+    background-color: rgb(40, 40, 40);
+}
+
+#refresh-popup:not(.show) {
+    top: -40px;
+    transition: top 10s;
+}
+
+#refresh-popup.show {
+    top: 20px;
+    transition: top 0.25s;
+}

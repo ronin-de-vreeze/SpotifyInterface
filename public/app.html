@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <title>App</title>
+</head>
+
+<body>
+    <div id="refresh-popup"><p>Refresh required</p></div>
+    <span id="name"></span>
+    <span><a href="/logout">Log out</a></span>
+    <button id="play">Play</button>
+    <ul id="playlists"></ul>
+    <ul id="tracks"></ul>
+
+    <script src="/interface.js"></script>
+    <script>
+        loadName();
+        loadTracks();
+        loadPlaylists();
+
+        const playButton = document.getElementById("play");
+        playButton.addEventListener("click", async () => {
+            const tracks = document.querySelectorAll('.track.included');
+            let selectedTracks = [];
+            Array.from(tracks).map((el) => { selectedTracks.push(el.getAttribute("spotify-id")) });
+
+            const response = await fetch("/play", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedTracks)
+            });
+
+            if (!response.ok) {
+                alert("A problem occured, make sure that your SPotify is playing to allow the request...");
+            }
+        });
+    </script>
+</body>
+
+</html>
