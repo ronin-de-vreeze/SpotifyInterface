@@ -10,7 +10,11 @@
     <span id="name"></span>
     <span><a href="/logout">Log out</a></span>
     <button id="play">Play</button>
-    <ul id="playlists"></ul>
+    <div id="playlists-content"> 
+        <div id="collapse-playlists" onclick="document.getElementById('playlists').classList.toggle('show')">Playlists</div>   
+        <div id="playlists">
+        </div>
+    </div>
     <ul id="tracks"></ul>
 
     <script src="/interface.js"></script>

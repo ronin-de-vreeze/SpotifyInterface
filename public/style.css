@@ -1,10 +1,41 @@
+#playlists-content {
+  padding: 200px;  
+}
+
+#playlists:not(.show) {
+  display: none;  
+}
+
+#playlists:not(.show) {
+  display: none;  
+}
+
+#playlists-content:has(#playlists:not(.show)) > #collapse-playlists::before {
+    content: '▼ ';
+}
+
+#playlists-content:has(#playlists.show) > #collapse-playlists::before {
+    content: '▲ ';
+}
+
+.playlist {
+    color: black;
+    margin: 5px;
+    background-color: grey;
+    border-radius: 10px;
+    display: inline-block;
+    padding: 10px;
+}
+
+.playlist.included {    
+    color: white;
+    background-color: black;
+}
+
 .track.included {
     color: green;
 }
 
-.playlist.included {
-    color: red;
-}
 
 
 #refresh-popup {

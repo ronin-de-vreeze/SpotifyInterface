@@ -115,7 +115,10 @@ app.post('/tracks', async (req, res) => {
     const accessToken = req.cookies.access_token;
     let tracks = {}
 
-    var parsedPlaylist = JSON.parse(decodeURIComponent(req.cookies.playlists));
+    let parsedPlaylist = [] 
+    if(req.cookies.playlists != null) {
+        parsedPlaylist = JSON.parse(decodeURIComponent(req.cookies.playlists));
+    }
     for (const [playlist_id, playlist_name] of Object.entries(parsedPlaylist)) {
         const tracksInPlaylist = await getTracksInPlaylist(playlist_id, accessToken);
 

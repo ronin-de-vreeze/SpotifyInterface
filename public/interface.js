@@ -89,12 +89,14 @@ async function loadPlaylists() {
         const playlists = await response.json();
         const list = document.getElementById("playlists");
 
-        const includedPlaylistsDict = JSON.parse(decodeURIComponent(document.cookie.replace("playlists=", "")));
-        console.log(includedPlaylistsDict);
+        let includedPlaylistsDict = []
+        if(document.cookie != null && document.cookie != "") {
+            includedPlaylistsDict = JSON.parse(decodeURIComponent(document.cookie.replace("playlists=", "")));
+        }
 
         for (let playlist_id in playlists) {
             // Add name li
-            let list_item = document.createElement("li");
+            let list_item = document.createElement("div");
             list_item.classList.add("playlist");
             list.appendChild(list_item);
             list_item.innerHTML = playlists[playlist_id];
