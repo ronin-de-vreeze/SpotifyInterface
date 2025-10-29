@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+require("dotenv").config();
 
 // Built-in middleware
 app.use(express.json());
@@ -30,7 +31,7 @@ app.get('/', (req, res) => {
 
 app.use(express.static(__dirname + '/public'));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });

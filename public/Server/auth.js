@@ -1,18 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const querystring = require('node:querystring');
-
-var client_id = '7354254814454ecbbef62bcc4d680591';
-var redirect_uri = 'http://localhost:3000/callback';
-var client_secret = '5beb5d19d27b49688a13a3bdbf65bdb3';
-var scope = 'user-read-private user-read-playback-state playlist-read-private user-library-read user-modify-playback-state playlist-modify-public playlist-modify-private';
+// var client_id = '7354254814454ecbbef62bcc4d680591';
+// var redirect_uri = 'http://localhost:3000/callback';
+// var client_secret = '5beb5d19d27b49688a13a3bdbf65bdb3';
+// var scope = 'user-read-private user-read-playback-state playlist-read-private user-library-read user-modify-playback-state playlist-modify-public playlist-modify-private';
 
 // Login logic
 router.get('/login', (req, res) => {
     const authUrl = 'https://accounts.spotify.com/authorize?' + querystring.stringify({
         response_type: 'code',
-        client_id, scope,
-        redirect_uri
+        client_id: process.env.SPOTIFY_CLIENT_ID, 
+        scope: process.env.SCOPE,
+        redirect_uri: process.env.SPOTIFY_REDIRECT
     });
 
     // Redirect to spotify auth
@@ -26,12 +26,12 @@ router.get('/callback', async (req, res) => {
     const response = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
-            'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64'),
+            'Authorization': 'Basic ' + Buffer.from(process.env.SPOTIFY_CLIENT_ID + ':' + process.env.SPOTIFY_CLIENT_SECRET).toString('base64'),
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: querystring.stringify({
             code,
-            redirect_uri,
+            redirect_uri: process.env.SPOTIFY_REDIRECT,
             grant_type: 'authorization_code'
         })
     });
