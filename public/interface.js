@@ -19,16 +19,16 @@ async function loadTracks() {
             // Add name li
             let list_item = document.createElement("li");
             list_item.classList.add("track");
-            list_item.addEventListener("click", () => {
-                list_item.classList.toggle("included");
-            });
+            
+        
             list.appendChild(list_item);
             list_item.innerHTML = tracks[track_id].name;
+           let queryString = tracks[track_id].name;
             list_item.setAttribute("spotify-id", track_id);
 
             // Add list for tags
             let tags_list = document.createElement("ul");
-            list.appendChild(tags_list);
+            list_item.appendChild(tags_list);
 
             let add_button = document.createElement("li");
             tags_list.appendChild(add_button);
@@ -53,6 +53,8 @@ async function loadTracks() {
                     track_id,
                     tracks[track_id].name);
             }
+
+            list_item.setAttribute("query", queryString);
         }
     } else {
         console.log(response);

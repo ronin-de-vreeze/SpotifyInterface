@@ -11,13 +11,16 @@
     <span><a href="/logout">Log out</a></span>
     <button id="play">Play</button>
     <div id="playlists-content"> 
-        <div id="collapse-playlists" onclick="document.getElementById('playlists').classList.toggle('show')">Playlists</div>   
+        <div id="collapse-playlists" onclick="document.getElementById('playlists').classList.toggle('show')">Playlists</div>  
+        <input type="search" name="include" id="include"> 
+        <input type="search" name="exclude" id="exclude"> 
         <div id="playlists">
         </div>
     </div>
     <ul id="tracks"></ul>
 
     <script src="/interface.js"></script>
+    <script src="/search.js"></script>
     <script>
         loadName();
         loadTracks();
@@ -25,7 +28,7 @@
 
         const playButton = document.getElementById("play");
         playButton.addEventListener("click", async () => {
-            const tracks = document.querySelectorAll('.track.included');
+            const tracks = document.querySelectorAll('.track.show');
             let selectedTracks = [];
             Array.from(tracks).map((el) => { selectedTracks.push(el.getAttribute("spotify-id")) });
 

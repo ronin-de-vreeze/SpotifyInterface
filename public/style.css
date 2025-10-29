@@ -18,6 +18,11 @@
     content: '▲ ';
 }
 
+.track:not(.show) {
+    /* color: rgb(202, 202, 202); */
+    display: none;
+}
+
 .playlist {
     color: black;
     margin: 5px;
@@ -30,10 +35,6 @@
 .playlist.included {    
     color: white;
     background-color: black;
-}
-
-.track.included {
-    color: green;
 }
 
 
@@ -52,7 +53,7 @@
 }
 
 #refresh-popup:not(.show) {
-    top: -40px;
+    top: -100px;
     transition: top 10s;
 }
 
