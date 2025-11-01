@@ -1,17 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const querystring = require('node:querystring');
-// var client_id = '7354254814454ecbbef62bcc4d680591';
-// var redirect_uri = 'http://localhost:3000/callback';
-// var client_secret = '5beb5d19d27b49688a13a3bdbf65bdb3';
-// var scope = 'user-read-private user-read-playback-state playlist-read-private user-library-read user-modify-playback-state playlist-modify-public playlist-modify-private';
 
 // Login logic
 router.get('/login', (req, res) => {
     const authUrl = 'https://accounts.spotify.com/authorize?' + querystring.stringify({
         response_type: 'code',
         client_id: process.env.SPOTIFY_CLIENT_ID, 
-        scope: process.env.SCOPE,
+        scope: process.env.SPOTIFY_SCOPE,
         redirect_uri: process.env.SPOTIFY_REDIRECT
     });
 
@@ -57,6 +53,7 @@ router.get('/callback', async (req, res) => {
 
 router.get('/logout', async (req, res) => {
     res.clearCookie('access_token');
+    res.clearCookie('playlists');
     res.redirect('/');
 });
 

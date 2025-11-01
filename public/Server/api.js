@@ -5,6 +5,8 @@ router.get('/name', async (req, res) => {
     const accessToken = req.cookies.access_token;
     const result = await spotifyRequest('/v1/me', accessToken, "GET");
     res.send(result.data.display_name);
+
+
 });
 
 router.get('/playlists', async (req, res) => {

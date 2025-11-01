@@ -20,7 +20,12 @@
 
 .track:not(.show) {
     /* color: rgb(202, 202, 202); */
-    display: none;
+    opacity: 20%;
+}
+
+#tracks {
+    padding: 150px;
+    columns: 3;
 }
 
 .playlist {
