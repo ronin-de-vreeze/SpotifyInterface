@@ -1,51 +1,37 @@
 <html>
 
 <head>
+    <!-- Import styles and set headers -->
     <link rel="stylesheet" href="/Style/style.css">
     <title>App</title>
+    <link rel="icon" type="image/x-icon" href="/Style/favicon.svg">
 </head>
 
 <body>
-    <div id="refresh-popup"><p>Refresh required</p></div>
-    <span id="name"></span>
-    <span><a href="/logout">Log out</a></span>
-    <button id="play">Play</button>
-    <div id="playlists-content"> 
-        <div id="collapse-playlists" onclick="document.getElementById('playlists').classList.toggle('show')">Playlists</div>  
-        <input type="search" name="include" id="include"> 
-        <input type="search" name="exclude" id="exclude"> 
+    <!-- Fixed topbar -->
+    <div id="refresh-popup" class="floating topbar">Refresh required</div>
+    <a href="/logout" id="logout" class="floating topbar">Logout</a>
+    <a id="play" class="floating topbar">Play</a>
+    <div id="collapse-playlists" class="floating topbar">Playlists
+    </div>
+
+    <input type="search" name="include" palceholder="Search" id="search" class="floating bottombar">
+
+    <!-- Playlists -->
+    <div id="playlists-content">
+        
+        
+
         <div id="playlists">
         </div>
     </div>
+
+    <!-- Tracks -->
     <ul id="tracks"></ul>
 
+    <!-- Import scripts -->
     <script src="/Client/interface.js"></script>
     <script src="/Client/search.js"></script>
-    <script>
-        loadName();
-        loadTracks();
-        loadPlaylists();
-
-        const playButton = document.getElementById("play");
-        playButton.addEventListener("click", async () => {
-            const tracks = document.querySelectorAll('.track.show');
-            let selectedTracks = [];
-            Array.from(tracks).map((el) => { selectedTracks.push(el.getAttribute("spotify-id")) });
-
-            const response = await fetch("/play", {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(selectedTracks)
-            });
-
-            if (!response.ok) {
-                alert("A problem occured, make sure that your SPotify is playing to allow the request...");
-            }
-        });
-    </script>
 </body>
 
 </html>

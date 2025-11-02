@@ -19,11 +19,11 @@ async function loadTracks() {
             // Add name li
             let list_item = document.createElement("li");
             list_item.classList.add("track");
-            
-        
+
+
             list.appendChild(list_item);
             list_item.innerHTML = tracks[track_id].name;
-           let queryString = tracks[track_id].name;
+            let queryString = tracks[track_id].name;
             list_item.setAttribute("spotify-id", track_id);
 
             // Add list for tags
@@ -92,7 +92,7 @@ async function loadPlaylists() {
         const list = document.getElementById("playlists");
 
         let includedPlaylistsDict = []
-        if(document.cookie != null && document.cookie != "") {
+        if (document.cookie != null && document.cookie != "") {
             includedPlaylistsDict = JSON.parse(decodeURIComponent(document.cookie.replace("playlists=", "")));
         }
 
@@ -104,7 +104,7 @@ async function loadPlaylists() {
             list_item.innerHTML = playlists[playlist_id];
             list_item.setAttribute("spotify-id", playlist_id);
 
-            if(playlist_id in includedPlaylistsDict) { 
+            if (playlist_id in includedPlaylistsDict) {
                 list_item.classList.add("included");
             }
 
@@ -113,8 +113,8 @@ async function loadPlaylists() {
 
                 const tracks = document.querySelectorAll('.playlist.included');
                 let selectedPlaylists = {};
-                Array.from(tracks).map((el) => { 
-                    selectedPlaylists[el.getAttribute("spotify-id")] = el.innerHTML; 
+                Array.from(tracks).map((el) => {
+                    selectedPlaylists[el.getAttribute("spotify-id")] = el.innerHTML;
                 })
 
                 console.log(selectedPlaylists);
@@ -141,3 +141,33 @@ async function loadName() {
         console.log(response);
     }
 }
+
+const playButton = document.getElementById("play");
+playButton.addEventListener("click", async () => {
+    const tracks = document.querySelectorAll('.track.show');
+    let selectedTracks = [];
+    Array.from(tracks).map((el) => { selectedTracks.push(el.getAttribute("spotify-id")) });
+
+    const response = await fetch("/play", {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(selectedTracks)
+    });
+
+    if (!response.ok) {
+        alert("A problem occured, make sure that your SPotify is playing to allow the request...");
+    }
+});
+
+addEventListener("load", (event) => {
+    loadName();
+    loadTracks();
+    loadPlaylists();
+
+    document.getElementById('collapse-playlists').addEventListener("click", () => {
+        document.getElementById('playlists').classList.toggle('show');
+    })
+})

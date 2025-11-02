@@ -1,20 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+
+body {
+    font-family: "Figtree", sans-serif;
+}
+
 #playlists-content {
-  padding: 200px;  
+    padding: 200px;
 }
 
 #playlists:not(.show) {
-  display: none;  
+    display: none;
 }
 
 #playlists:not(.show) {
-  display: none;  
+    display: none;
 }
 
-#playlists-content:has(#playlists:not(.show)) > #collapse-playlists::before {
+#playlists-content:has(#playlists:not(.show))>#collapse-playlists::before {
     content: '▼ ';
 }
 
-#playlists-content:has(#playlists.show) > #collapse-playlists::before {
+#playlists-content:has(#playlists.show)>#collapse-playlists::before {
     content: '▲ ';
 }
 
@@ -37,32 +43,59 @@
     padding: 10px;
 }
 
-.playlist.included {    
+.playlist.included {
     color: white;
     background-color: black;
 }
 
 
 
+
+
+#collapse-playlists {
+    right: 20px;
+}
+
+#play {
+    left: 130px;
+    text-decoration: none;
+}
+
+#logout {    
+    left: 20px;
+    text-decoration: none;
+}
+
 #refresh-popup {
-    position: fixed;
-    left: 25%;
+    left: 50%;
     transform: translateX(-50%);
-    width: 50%;
-    height: 40px;
-    text-align: center;
-    padding: 1rem;
-    color: white;
-    border-radius: 100px;
-    background-color: rgb(40, 40, 40);
 }
 
 #refresh-popup:not(.show) {
-    top: -100px;
-    transition: top 10s;
+  display: none;
 }
 
-#refresh-popup.show {
+.floating {
+    position: fixed;
+    color: rgb(71, 71, 71);
+    padding: 15px;
+    border-radius: 50px;
+}
+
+.topbar {
     top: 20px;
-    transition: top 0.25s;
+    box-shadow: rgb(116, 116, 116) 0px 2px 5px;
+    text-transform: uppercase;
+    cursor:pointer;
+}
+
+.bottombar {
+    text-transform: lowercase;
+    border: none;
+    bottom: 20px;
+}
+
+#search {
+    left: 230px;
+    box-shadow: rgb(116, 116, 116) 0px 2px 5px;
 }
