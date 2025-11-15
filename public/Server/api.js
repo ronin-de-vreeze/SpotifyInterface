@@ -19,7 +19,11 @@ router.get('/playlists', async (req, res) => {
         let result = await spotifyRequest(url, accessToken, "GET");
         if (result.status == 200) {
             result.data.items.forEach(playlist => {
-                playlists[playlist.id] = playlist.name;
+                playlists[playlist.id] = {
+                    name: playlist.name,
+                    owner: playlist.owner.display_name,
+                    size: playlist.tracks.total
+                };
             });
 
             url = result.data.next;

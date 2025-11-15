@@ -2,19 +2,45 @@
 
 body {
     font-family: "Figtree", sans-serif;
+    background-color: rgb(20, 20, 20);
 }
 
-/* #playlists-content {
-    padding: 200px;
+.tab-content {
+    padding: 300px;
 }
 
-#playlists:not(.show) {
-    display: none;
+table {
+    color: white;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 1.2rem;
 }
 
-#playlists:not(.show) {
-    display: none;
+table th:nth-child(1),
+table td:nth-child(1) {
+    width: 100px;
+    color: grey;
+    text-align: right;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+
+table th:nth-child(2),
+table td:nth-child(2) {
+    width: 20px;
+}
+
+table th:nth-child(4),
+table td:nth-child(4) {
+    width: 100px;
+    color: grey;
+    text-align: right;
+}
+
+/* 
+
 
 #playlists-content:has(#playlists:not(.show))>#collapse-playlists::before {
     content: '▼ ';
@@ -75,7 +101,7 @@ body {
   display: none;
 } */
 
-.floating {
+/* .floating {
     position: fixed;
     color: rgb(71, 71, 71);
     padding: 15px;
@@ -87,44 +113,35 @@ body {
     box-shadow: rgb(116, 116, 116) 0px 2px 5px;
     text-transform: uppercase;
     cursor:pointer;
-}
+} */
 
 
 .tab {
-  /* overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1; */
+    background-color: rgb(245, 245, 245);
+    /* box-shadow: rgb(0, 0, 0) 0px 2px 15px; */
     position: fixed;
-    /* padding: 5px; */
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 10px;
     top: 20px;
-    background-color: blue;
     left: 50%;
     transform: translateX(-50%);
 }
 
 /* Style the buttons inside the tab */
-.tab > div {
-    /* font-size: 10px; */
-    height: 100%;
-  float: left;
-  /* border: none; */
-  /* outline: none; */
-  padding: 0px 0px;
+.tab-item {
+    float: left;
+    padding: 10px 10px;
 }
 
-.tab > div > button {
-    height: 100%;
-}
 /* Create an active/current tablink class */
-/* .tab button.active {
-  background-color: #ccc;
-} */
+.tab-item.active {
+    background-color: #ffffff;
+    box-shadow: rgb(204, 204, 204) 0px 2px 5px;
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
+}
 
 /* Style the tab content */
 /* .tab-content {
   display: none;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-top: none;
 } */

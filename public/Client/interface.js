@@ -86,45 +86,68 @@ function addTagToSong(tags_list, playlist_id, playlist_name, track_id, track_nam
 }
 
 async function loadPlaylists() {
+    const playlistsContent = document.getElementById("playlists-content");
+    playlistsContent.innerHTML = "Loading";
+
+    // Fetch playlists
     const response = await fetch("/playlists");
+
+    // If OK, load response
     if (response.ok) {
         const playlists = await response.json();
-        const list = document.getElementById("playlists");
 
-        let includedPlaylistsDict = []
-        if (document.cookie != null && document.cookie != "") {
-            includedPlaylistsDict = JSON.parse(decodeURIComponent(document.cookie.replace("playlists=", "")));
-        }
+        // let includedPlaylistsDict = []
+        // if (document.cookie != null && document.cookie != "") {
+        //     includedPlaylistsDict = JSON.parse(decodeURIComponent(document.cookie.replace("playlists=", "")));
+        // }
 
+        // Create table
+        const playlistsTable = document.createElement('table');
+        playlistsContent.innerHTML = "";
+        playlistsContent.appendChild(playlistsTable);
+
+        // Foreach playlists, add to table
         for (let playlist_id in playlists) {
-            // Add name li
-            let list_item = document.createElement("div");
-            list_item.classList.add("playlist");
-            list.appendChild(list_item);
-            list_item.innerHTML = playlists[playlist_id];
-            list_item.setAttribute("spotify-id", playlist_id);
+            const playlistRow = playlistsTable.insertRow();
+            playlistRow.setAttribute("spotify-id", playlist_id);
+            
+            const rowOwner = playlistRow.insertCell();
+            rowOwner.innerHTML = playlists[playlist_id].owner;
 
-            if (playlist_id in includedPlaylistsDict) {
-                list_item.classList.add("included");
-            }
+            const rowIncluded = playlistRow.insertCell();
+            const rowIncludedCheckbox = document.createElement("input");
+            rowIncludedCheckbox.type = "checkbox";
+            rowIncluded.appendChild(rowIncludedCheckbox);
 
-            list_item.addEventListener("click", () => {
-                list_item.classList.toggle("included");
+            const rowName = playlistRow.insertCell();
+            rowName.innerHTML = playlists[playlist_id].name;
 
-                const tracks = document.querySelectorAll('.playlist.included');
-                let selectedPlaylists = {};
-                Array.from(tracks).map((el) => {
-                    selectedPlaylists[el.getAttribute("spotify-id")] = el.innerHTML;
-                })
+            const rowSize = playlistRow.insertCell();
+            rowSize.innerHTML = `${playlists[playlist_id].size} songs`;
+            
+            // list_item.classList.add("playlist");
 
-                console.log(selectedPlaylists);
-                const jsonString = JSON.stringify(selectedPlaylists);
+            // if (playlist_id in includedPlaylistsDict) {
+            //     list_item.classList.add("included");
+            // }
 
-                document.cookie = `playlists=${encodeURIComponent(jsonString)}; path=/; max-age=3600; secure`;
-                console.log(document.cookie);
+            // list_item.addEventListener("click", () => {
+            //     list_item.classList.toggle("included");
 
-                document.getElementById("refresh-popup").classList.add("show");
-            });
+            //     const tracks = document.querySelectorAll('.playlist.included');
+            //     let selectedPlaylists = {};
+            //     Array.from(tracks).map((el) => {
+            //         selectedPlaylists[el.getAttribute("spotify-id")] = el.innerHTML;
+            //     })
+
+            //     console.log(selectedPlaylists);
+            //     const jsonString = JSON.stringify(selectedPlaylists);
+
+            //     document.cookie = `playlists=${encodeURIComponent(jsonString)}; path=/; max-age=3600; secure`;
+            //     console.log(document.cookie);
+
+            //     document.getElementById("refresh-popup").classList.add("show");
+            // });
         }
     } else {
         console.log(response);
@@ -163,25 +186,40 @@ playButton.addEventListener("click", async () => {
 });
 
 addEventListener("load", (event) => {
-    loadName();
-    loadTracks();
-    loadPlaylists();
-
-    document.getElementById('collapse-playlists').addEventListener("click", () => {
-        document.getElementById('playlists').classList.toggle('show');
-    })
+    // loadName();
+    // loadTracks();
 })
 
-function openTab(evt, cityName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tab-content");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tab-item");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
+function openView(event, tabName) {
+    var i, tabcontent, tablinks;
+
+    // Remove all content
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    // Set current content to active
+    document.getElementById(tabName).style.display = "block";
+
+    // Set all tabs to inactive
+    tablinks = document.getElementsByClassName("tab-item");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    // Set current tab to active
+    event.currentTarget.className += " active";
+}
+
+function openPlaylistsView(event) {
+    openView(event, 'playlists-content');
+    loadPlaylists();
+}
+
+function openTracksView(event) {
+    openView(event, 'tracks-content');
+}
+
+function openSearchView(event) {
+    openView(event, 'search-content');
 }

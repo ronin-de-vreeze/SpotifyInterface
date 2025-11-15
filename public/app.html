@@ -10,33 +10,24 @@
 <body>
 
     <div class="tab">
-        <div><p>Title</p></div>
-        <div><button class="tab-item" onclick="openTab(event, 'playlists-content')">Playlists</button></div>
-        <div><button class="tab-item" onclick="openTab(event, 'tracks-content')">Tracks</button></div>
-        <div><button class="tab-item" onclick="openTab(event, 'search-content')">Search</button></div>
-        <div><p>X</p></div>
+        <div class="tab-item" style="margin-right: 40px;"><b>Spotify Interface</b></div>
+        <div class="tab-item active" onclick="openPlaylistsView(event)">Playlists</div> 
+        <div class="tab-item" onclick="openTracksView(event)">Tracks</div> 
+        <div class="tab-item" onclick="openSearchView(event)">Search</div> 
+        <div class="tab-item" onclick="window.location.href = 'logout'" style="margin-left: 40px;"><image src="/Style/logout-svgrepo-com.svg" height="20"></image></div>
     </div>
-
-
-    <!-- Fixed topbar -->
-    <!-- <div id="refresh-popup" class="floating topbar">Refresh required</div>
-    <a href="/logout" id="logout" class="floating topbar">Logout</a>
-    <a id="play" class="floating topbar">Play</a>
-    <div id="collapse-playlists" class="floating topbar">Playlists</div>
-    <input type="search" name="include" palceholder="Search" id="search" class="floating bottombar"> -->
 
     <!-- Playlists -->
     <div id="playlists-content" class="tab-content">
-        <div id="playlists"></div>
     </div>
 
     <!-- Tracks -->
-    <div id="tracks-content" class="tab-content">
+    <div id="tracks-content" class="tab-content" style="display: none;">
         <ul id="tracks"></ul>
     </div>
 
     <!-- Search -->
-    <div id="search-content" class="tab-content">
+    <div id="search-content" class="tab-content" style="display: none;">
         <p>Search</p>
     </div>
 
