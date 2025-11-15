@@ -8,26 +8,37 @@
 </head>
 
 <body>
-    <!-- Fixed topbar -->
-    <div id="refresh-popup" class="floating topbar">Refresh required</div>
-    <a href="/logout" id="logout" class="floating topbar">Logout</a>
-    <a id="play" class="floating topbar">Play</a>
-    <div id="collapse-playlists" class="floating topbar">Playlists
+
+    <div class="tab">
+        <div><p>Title</p></div>
+        <div><button class="tab-item" onclick="openTab(event, 'playlists-content')">Playlists</button></div>
+        <div><button class="tab-item" onclick="openTab(event, 'tracks-content')">Tracks</button></div>
+        <div><button class="tab-item" onclick="openTab(event, 'search-content')">Search</button></div>
+        <div><p>X</p></div>
     </div>
 
-    <input type="search" name="include" palceholder="Search" id="search" class="floating bottombar">
+
+    <!-- Fixed topbar -->
+    <!-- <div id="refresh-popup" class="floating topbar">Refresh required</div>
+    <a href="/logout" id="logout" class="floating topbar">Logout</a>
+    <a id="play" class="floating topbar">Play</a>
+    <div id="collapse-playlists" class="floating topbar">Playlists</div>
+    <input type="search" name="include" palceholder="Search" id="search" class="floating bottombar"> -->
 
     <!-- Playlists -->
-    <div id="playlists-content">
-        
-        
-
-        <div id="playlists">
-        </div>
+    <div id="playlists-content" class="tab-content">
+        <div id="playlists"></div>
     </div>
 
     <!-- Tracks -->
-    <ul id="tracks"></ul>
+    <div id="tracks-content" class="tab-content">
+        <ul id="tracks"></ul>
+    </div>
+
+    <!-- Search -->
+    <div id="search-content" class="tab-content">
+        <p>Search</p>
+    </div>
 
     <!-- Import scripts -->
     <script src="/Client/interface.js"></script>
