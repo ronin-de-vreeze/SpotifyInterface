@@ -6,19 +6,23 @@ body {
 }
 
 .tab-content {
-    padding: 300px;
+    padding: 450px;
 }
 
-table {
+#playlists-content, #tracks-content {
+    color: white;
+}
+
+#playlists-content > table, #tracks-content > table {
     color: white;
     width: 100%;
     table-layout: fixed;
     font-size: 1.2rem;
 }
 
-table th:nth-child(1),
-table td:nth-child(1) {
-    width: 100px;
+#playlists-content > table th:nth-child(3),
+#playlists-content > table td:nth-child(3) {
+    width: 200px;
     color: grey;
     text-align: right;
 
@@ -27,16 +31,42 @@ table td:nth-child(1) {
     text-overflow: ellipsis;
 }
 
-table th:nth-child(2),
-table td:nth-child(2) {
+#playlists-content > table th:nth-child(1),
+#playlists-content > table td:nth-child(1) {
     width: 20px;
 }
 
-table th:nth-child(4),
-table td:nth-child(4) {
-    width: 100px;
+
+
+
+
+
+#tracks-content > table th:nth-child(3),
+#tracks-content > table td:nth-child(3) {
+    color: grey;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#tracks-content > table th:nth-child(2),
+#tracks-content > table td:nth-child(2) {
+    width: 250px;;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#tracks-content > table th:nth-child(1),
+#tracks-content > table td:nth-child(1) {
+    width: 150px;
     color: grey;
     text-align: right;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* 
@@ -101,24 +131,8 @@ table td:nth-child(4) {
   display: none;
 } */
 
-/* .floating {
-    position: fixed;
-    color: rgb(71, 71, 71);
-    padding: 15px;
-    border-radius: 50px;
-}
-
-.topbar {
-    top: 20px;
-    box-shadow: rgb(116, 116, 116) 0px 2px 5px;
-    text-transform: uppercase;
-    cursor:pointer;
-} */
-
-
 .tab {
     background-color: rgb(245, 245, 245);
-    /* box-shadow: rgb(0, 0, 0) 0px 2px 15px; */
     position: fixed;
     padding: 10px;
     border-radius: 10px;
@@ -127,21 +141,26 @@ table td:nth-child(4) {
     transform: translateX(-50%);
 }
 
-/* Style the buttons inside the tab */
 .tab-item {
     float: left;
     padding: 10px 10px;
 }
 
-/* Create an active/current tablink class */
 .tab-item.active {
     background-color: #ffffff;
-    box-shadow: rgb(204, 204, 204) 0px 2px 5px;
+    box-shadow: rgb(165, 165, 165) 0px 2px 5px;
     border-radius: 10px;
     transition: background-color 0.2s ease;
 }
 
-/* Style the tab content */
-/* .tab-content {
-  display: none;
-} */
+#search-content > div {
+    background-color: rgb(245, 245, 245);
+    width: 60%;
+    height: 20%;
+    padding: 0px;
+    position: fixed;
+    border-radius: 10px;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+}

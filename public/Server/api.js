@@ -43,7 +43,7 @@ async function getTracksInPlaylist(playlist_id, accessToken) {
         let result = await spotifyRequest(url, accessToken, "GET");
         if (result.status == 200) {
             result.data.items.forEach(track => {
-                tracks.push({ id: track.track.id, name: track.track.name });
+                tracks.push({ id: track.track.id, name: track.track.name, artist: track.track.artists[0].name });
             });
 
             url = result.data.next;
@@ -93,6 +93,7 @@ router.post('/tracks', async (req, res) => {
         }
 
         for (const track of tracksInPlaylist) {
+            // console.log(track);
             if (tracks[track.id]) {
                 tracks[track.id].playlists.push({
                     id: playlist_id,
@@ -101,7 +102,7 @@ router.post('/tracks', async (req, res) => {
             } else {
                 tracks[track.id] = {
                     name: track.name,
-                    artists: track.artists,
+                    artist: track.artist,
                     // anything else you want from track
                     playlists: [{
                         id: playlist_id,

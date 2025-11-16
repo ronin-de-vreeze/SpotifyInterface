@@ -10,52 +10,78 @@ async function loadTracks() {
         // })
     };
 
+    
+    const tracksContent = document.getElementById("tracks-content");
+    tracksContent.innerHTML = "Loading";
+
     const response = await fetch("/tracks", requestOptions);
+
     if (response.ok) {
         const tracks = await response.json();
-        const list = document.getElementById("tracks");
 
+        // Create table
+        const tracksTable = document.createElement('table');
+        tracksContent.innerHTML = "";
+        tracksContent.appendChild(tracksTable);
+
+        // Foreach playlists, add to table
         for (let track_id in tracks) {
-            // Add name li
-            let list_item = document.createElement("li");
-            list_item.classList.add("track");
+            const tracksRow = tracksTable.insertRow();
+            tracksRow.classList.add("track");
+            // tracksRow.setAttribute("spotify-id", playlist_id);
+            // tracksRow.setAttribute("spotify-name", playlists[playlist_id].name);
 
+            const rowArtist = tracksRow.insertCell();
+            rowArtist.innerHTML = tracks[track_id].artist;
+            
+            const rowName = tracksRow.insertCell();
+            rowName.innerHTML = tracks[track_id].name;
 
-            list.appendChild(list_item);
-            list_item.innerHTML = tracks[track_id].name;
-            let queryString = tracks[track_id].name;
-            list_item.setAttribute("spotify-id", track_id);
-
-            // Add list for tags
-            let tags_list = document.createElement("ul");
-            list_item.appendChild(tags_list);
-
-            let add_button = document.createElement("li");
-            tags_list.appendChild(add_button);
-            add_button.innerHTML = "+";
-            add_button.addEventListener("click", async () => {
-                console.log(`Open popup here for ${tracks[track_id].name}`)
-                const playlistToAdd = "3JAXKCPcBQw1ORmUKbO4dC";
-
-                const add_response = await fetch(`/add/${playlistToAdd}/to/` + track_id, {
-                    method: "POST"
-                });
-
-                if (add_response.ok) {
-                    addTagToSong(tags_list, playlistToAdd, "Placeholder", track_id, tracks[track_id].name);
-                }
-            });
-
-            for (let index in tracks[track_id].playlists) {
-                addTagToSong(tags_list,
-                    tracks[track_id].playlists[index].id,
-                    tracks[track_id].playlists[index].name,
-                    track_id,
-                    tracks[track_id].name);
-            }
-
-            list_item.setAttribute("query", queryString);
+            const rowTags = tracksRow.insertCell();
+            rowTags.innerHTML = "tracks[track_id].artist";
         }
+
+    //     for (let track_id in tracks) {
+    //         // Add name li
+    //         let list_item = document.createElement("li");
+    //         list_item.classList.add("track");
+
+
+    //         list.appendChild(list_item);
+    //         list_item.innerHTML = tracks[track_id].name;
+    //         let queryString = tracks[track_id].name;
+    //         list_item.setAttribute("spotify-id", track_id);
+
+    //         // Add list for tags
+    //         let tags_list = document.createElement("ul");
+    //         list_item.appendChild(tags_list);
+
+    //         let add_button = document.createElement("li");
+    //         tags_list.appendChild(add_button);
+    //         add_button.innerHTML = "+";
+    //         add_button.addEventListener("click", async () => {
+    //             console.log(`Open popup here for ${tracks[track_id].name}`)
+    //             const playlistToAdd = "3JAXKCPcBQw1ORmUKbO4dC";
+
+    //             const add_response = await fetch(`/add/${playlistToAdd}/to/` + track_id, {
+    //                 method: "POST"
+    //             });
+
+    //             if (add_response.ok) {
+    //                 addTagToSong(tags_list, playlistToAdd, "Placeholder", track_id, tracks[track_id].name);
+    //             }
+    //         });
+
+    //         for (let index in tracks[track_id].playlists) {
+    //             addTagToSong(tags_list,
+    //                 tracks[track_id].playlists[index].id,
+    //                 tracks[track_id].playlists[index].name,
+    //                 track_id,
+    //                 tracks[track_id].name);
+    //         }
+
+    //         list_item.setAttribute("query", queryString);
+    //     }
     } else {
         console.log(response);
     }
@@ -96,10 +122,11 @@ async function loadPlaylists() {
     if (response.ok) {
         const playlists = await response.json();
 
-        // let includedPlaylistsDict = []
-        // if (document.cookie != null && document.cookie != "") {
-        //     includedPlaylistsDict = JSON.parse(decodeURIComponent(document.cookie.replace("playlists=", "")));
-        // }
+        // Parse cookies if possible
+        let includedPlaylistsDict = []
+        if (document.cookie != null && document.cookie != "") {
+            includedPlaylistsDict = JSON.parse(decodeURIComponent(document.cookie.replace("playlists=", "")));
+        }
 
         // Create table
         const playlistsTable = document.createElement('table');
@@ -109,10 +136,9 @@ async function loadPlaylists() {
         // Foreach playlists, add to table
         for (let playlist_id in playlists) {
             const playlistRow = playlistsTable.insertRow();
+            playlistRow.classList.add("playlist");
             playlistRow.setAttribute("spotify-id", playlist_id);
-            
-            const rowOwner = playlistRow.insertCell();
-            rowOwner.innerHTML = playlists[playlist_id].owner;
+            playlistRow.setAttribute("spotify-name", playlists[playlist_id].name);
 
             const rowIncluded = playlistRow.insertCell();
             const rowIncludedCheckbox = document.createElement("input");
@@ -122,73 +148,51 @@ async function loadPlaylists() {
             const rowName = playlistRow.insertCell();
             rowName.innerHTML = playlists[playlist_id].name;
 
-            const rowSize = playlistRow.insertCell();
-            rowSize.innerHTML = `${playlists[playlist_id].size} songs`;
-            
-            // list_item.classList.add("playlist");
+            const rowInfo = playlistRow.insertCell();
+            rowInfo.innerHTML = `${playlists[playlist_id].owner} | ${playlists[playlist_id].size} songs`;
 
-            // if (playlist_id in includedPlaylistsDict) {
-            //     list_item.classList.add("included");
-            // }
+            if (playlist_id in includedPlaylistsDict) {
+                rowIncludedCheckbox.checked = true;
+            }
 
-            // list_item.addEventListener("click", () => {
-            //     list_item.classList.toggle("included");
+            rowIncludedCheckbox.addEventListener('change', function() {
+                console.log("TEST");
 
-            //     const tracks = document.querySelectorAll('.playlist.included');
-            //     let selectedPlaylists = {};
-            //     Array.from(tracks).map((el) => {
-            //         selectedPlaylists[el.getAttribute("spotify-id")] = el.innerHTML;
-            //     })
+                const playlists = [...document.querySelectorAll('.playlist td input:checked')].map(input => input.closest('.playlist'));
+                let selectedPlaylists = {};
+                Array.from(playlists).map((el) => {
+                    selectedPlaylists[el.getAttribute("spotify-id")] = el.getAttribute("spotify-name");
+                });
 
-            //     console.log(selectedPlaylists);
-            //     const jsonString = JSON.stringify(selectedPlaylists);
-
-            //     document.cookie = `playlists=${encodeURIComponent(jsonString)}; path=/; max-age=3600; secure`;
-            //     console.log(document.cookie);
-
-            //     document.getElementById("refresh-popup").classList.add("show");
-            // });
+                const jsonString = JSON.stringify(selectedPlaylists);
+                document.cookie = `playlists=${encodeURIComponent(jsonString)}; path=/; max-age=3600; secure`;
+                console.log(document.cookie);
+            });
         }
     } else {
         console.log(response);
     }
 }
 
-async function loadName() {
-    const response = await fetch("/name");
-    if (response.ok) {
-        const name = await response.text();
-        const element = document.getElementById("name");
-        element.innerHTML = name;
-    } else {
-        console.log(response);
-    }
-}
+// const playButton = document.getElementById("play");
+// playButton.addEventListener("click", async () => {
+//     const tracks = document.querySelectorAll('.track.show');
+//     let selectedTracks = [];
+//     Array.from(tracks).map((el) => { selectedTracks.push(el.getAttribute("spotify-id")) });
 
-const playButton = document.getElementById("play");
-playButton.addEventListener("click", async () => {
-    const tracks = document.querySelectorAll('.track.show');
-    let selectedTracks = [];
-    Array.from(tracks).map((el) => { selectedTracks.push(el.getAttribute("spotify-id")) });
+//     const response = await fetch("/play", {
+//         method: 'POST',
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(selectedTracks)
+//     });
 
-    const response = await fetch("/play", {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(selectedTracks)
-    });
-
-    if (!response.ok) {
-        alert("A problem occured, make sure that your SPotify is playing to allow the request...");
-    }
-});
-
-addEventListener("load", (event) => {
-    // loadName();
-    // loadTracks();
-})
+//     if (!response.ok) {
+//         alert("A problem occured, make sure that your SPotify is playing to allow the request...");
+//     }
+// });
 
 function openView(event, tabName) {
     var i, tabcontent, tablinks;
@@ -218,8 +222,18 @@ function openPlaylistsView(event) {
 
 function openTracksView(event) {
     openView(event, 'tracks-content');
+    loadTracks();
 }
 
 function openSearchView(event) {
     openView(event, 'search-content');
+    // document.getElementById('search-content').style.display = "block";
+
+    // // Set all tabs to inactive
+    // tablinks = document.getElementsByClassName("tab-item");
+    // for (i = 0; i < tablinks.length; i++) {
+    //     tablinks[i].className = tablinks[i].className.replace(" active", "");
+    // }
+    // // Set current tab to active
+    // event.currentTarget.className += " active";
 }
