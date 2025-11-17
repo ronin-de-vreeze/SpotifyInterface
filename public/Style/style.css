@@ -13,7 +13,8 @@ body {
     color: white;
 }
 
-#playlists-content > table, #tracks-content > table {
+#playlists-content > table, #tracks-table-container > table {
+    border-collapse: separate;
     color: white;
     width: 100%;
     table-layout: fixed;
@@ -41,25 +42,26 @@ body {
 
 
 
-#tracks-content > table th:nth-child(3),
-#tracks-content > table td:nth-child(3) {
+#tracks-table-container > table th:nth-child(3),
+#tracks-table-container > table td:nth-child(3) {
     color: grey;
+    float: right;
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#tracks-content > table th:nth-child(2),
-#tracks-content > table td:nth-child(2) {
+#tracks-table-container > table th:nth-child(2),
+#tracks-table-container > table td:nth-child(2) {
     width: 250px;;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-#tracks-content > table th:nth-child(1),
-#tracks-content > table td:nth-child(1) {
+#tracks-table-container > table th:nth-child(1),
+#tracks-table-container > table td:nth-child(1) {
     width: 150px;
     color: grey;
     text-align: right;
@@ -133,6 +135,7 @@ body {
 
 .tab {
     background-color: rgb(245, 245, 245);
+    width: 50%;
     position: fixed;
     padding: 10px;
     border-radius: 10px;
@@ -153,14 +156,26 @@ body {
     transition: background-color 0.2s ease;
 }
 
-#search-content > div {
-    background-color: rgb(245, 245, 245);
-    width: 60%;
+#search-bar {
+    /* background-color: rgb(245, 245, 245); */
+    width: 50%;
     height: 20%;
     padding: 0px;
     position: fixed;
     border-radius: 10px;
-    top: 100px;
-    left: 50%;
+    top: 20px; 
+    background-color: rgb(212, 212, 212);
+    padding: 10px;
+    z-index: -9999;
+    left: 50%; 
     transform: translateX(-50%);
+    color: black;
+}
+
+.tag {
+    padding: 10px;
+    margin-right: 5px;
+    display: inline-block;
+    border-radius: 5px;
+    color: black;
 }

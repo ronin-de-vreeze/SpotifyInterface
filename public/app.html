@@ -11,9 +11,9 @@
 
     <div class="tab">
         <div class="tab-item" style="margin-right: 40px;"><b>Spotify Interface</b></div>
-        <div class="tab-item" onclick="openPlaylistsView(event)">Playlists</div> 
+        <div class="tab-item" onclick="openPlaylistsView(event)" id="default-open">Playlists</div> 
         <div class="tab-item" onclick="openTracksView(event)">Tracks</div> 
-        <div class="tab-item" onclick="openSearchView(event)">Search</div> 
+        <!-- <div class="tab-item" onclick="openSearchView(event)">Search</div>  -->
         <div class="tab-item" onclick="window.location.href = 'logout'" style="margin-left: 40px;"><image src="/Style/logout-svgrepo-com.svg" height="20"></image></div>
     </div>
 
@@ -21,15 +21,15 @@
     <div id="playlists-content" class="tab-content" style="display: none;">
     </div>
 
-    <!-- Tracks -->
     <div id="tracks-content" class="tab-content" style="display: none;">
-    </div>
-
-    <!-- Search -->
-    <div id="search-content" class="tab-content" style="display: none;">
-        <p>Search</p>
-        <div>
-            
+        <!-- Tracks -->
+        <div id="tracks-table-container">
+        </div>
+        <!-- Search -->
+        <div id="search-bar">
+            <p>Search</p>
+            <input type="text" placeholder="Include">
+            <input type="text" placeholder="Exclude">
         </div>
     </div>
 

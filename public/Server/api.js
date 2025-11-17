@@ -43,6 +43,12 @@ async function getTracksInPlaylist(playlist_id, accessToken) {
         let result = await spotifyRequest(url, accessToken, "GET");
         if (result.status == 200) {
             result.data.items.forEach(track => {
+                if(track.track == null ) {
+                    console.log(`Null track found in ${url}`);
+                    console.log(track);
+                    return;
+                }
+
                 tracks.push({ id: track.track.id, name: track.track.name, artist: track.track.artists[0].name });
             });
 
