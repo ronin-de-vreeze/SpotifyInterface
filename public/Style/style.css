@@ -3,6 +3,9 @@
 body {
     font-family: "Figtree", sans-serif;
     background-color: rgb(20, 20, 20);
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
 }
 
 .tab-content {
@@ -133,15 +136,29 @@ body {
   display: none;
 } */
 
+
 .tab {
     background-color: rgb(245, 245, 245);
     width: 50%;
-    position: fixed;
-    padding: 10px;
-    border-radius: 10px;
-    top: 20px;
+    /* position: fixed; */
+    float: left;
+    /* padding: 10px; */
+    /* border-radius: 10px; */
+    /* top: 20px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%); */
+}
+
+#content-container {
+    width: 50%;
+  float: left;
+    background-color: blanchedalmond;
+}
+
+@media (max-width: 620px) {
+    .tab, #content-container {
+        width: 100%;
+    }
 }
 
 .tab-item {
