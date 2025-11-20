@@ -12,34 +12,42 @@
     <div id="container">
         <div id="menu-container">
             <div id="menu" class="">
-                <div class="menu-item" content-name="home"><p>Home</p></div>
-                <div class="menu-item" content-name="playlists"><p>Playlists</p></div>
-                <div class="menu-item selected" content-name="tracks">
-                    <p>Tracks</p>
+                <div class="menu-item selected" content-name="home"><h3>Home</h3></div>
+                <div class="menu-item" content-name="playlists" onclick="openPlaylistsView(event)" ><h3>Playlists</h3></div>
+                <div class="menu-item" content-name="tracks" onclick="openTracksView(event)">
+                    <h3>Tracks</h3>
                     <div class="sub-menu-item"> 
-                        <div style="height: 80px"></div>
+                        <h4 style="margin-top: 20px;">Select</h4>
+                        <input type="text" id="lname" name="lname"><br><br>
+                        <input type="text" id="lname" name="lname"><br><br>
+                        
+                        <h4 style="margin-top: 20px;">Sort</h4>
+                        <button>Spotify</button>
+                        <button>DJ</button>
+                        
+                        <h4 style="margin-top: 20px;">Export</h4>
                         <button>Play</button>
                         <button>Save</button>
-                        <div style="height: 30px"></div>
-                        <input type="text" id="lname" name="lname"><br><br>
                     </div>
-
                 </div>
-                <div class="menu-item" content-name="settings"><p>Settings</p></div>
-                <a class="menu-item" href="/help">logout</a>
+                <div class="menu-item" content-name="settings"><h3>Settings</h3></div>
+                <a class="menu-item" href="/help"><h3>Logout</h3></a>
             </div>
         </div>
 
-        <div class="content-panel" id="content-home" style="display: none;">
-            <p>Welcome to the Home Page</p>
+        <div class="content-panel" id="content-home">
+            <h2>Welcome to the Home Page</h2>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Commodi accusantium, explicabo nostrum delectus consequatur magnam laboriosam molestias quasi sed quidem perspiciatis nisi tempora aut natus earum dignissimos voluptates? Blanditiis, nulla?</p>
         </div>
 
         <div class="content-panel" id="content-playlists" style="display: none;">
-            <p>Welcome to the Playlists Page</p>
+
         </div>
 
-        <div class="content-panel" id="content-tracks">
-            <p>Welcome to the Tracks Page</p>
+        <div class="content-panel" id="content-tracks" style="display: none;">
+            <div id="tracks-table-container">
+
+            </div>
         </div>
 
         <div class="content-panel" id="content-settings" style="display: none;">
@@ -77,6 +85,9 @@
             });
         });
     </script>
+    
+    <!-- Import scripts -->
+    <script src="/Client/interface.js"></script>
 </body>
 
 </html>

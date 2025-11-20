@@ -40,7 +40,7 @@ async function loadTracks() {
 }
 
 async function loadPlaylists() {
-    const playlistsContent = document.getElementById("playlists-content");
+    const playlistsContent = document.getElementById("content-playlists");
     playlistsContent.innerHTML = "Loading";
 
     // Fetch playlists
@@ -142,37 +142,33 @@ const generateHash = (string) => {
 //     }
 // });
 
-function openView(event, tabName) {
-    var i, tabcontent, tablinks;
+// function openView(event, tabName) {
+//     var i, tabcontent, tablinks;
 
-    // Remove all content
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
+//     // Remove all content
+//     tabcontent = document.getElementsByClassName("tab-content");
+//     for (i = 0; i < tabcontent.length; i++) {
+//         tabcontent[i].style.display = "none";
+//     }
 
-    // Set current content to active
-    document.getElementById(tabName).style.display = "block";
+//     // Set current content to active
+//     document.getElementById(tabName).style.display = "block";
 
-    // Set all tabs to inactive
-    tablinks = document.getElementsByClassName("tab-item");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    // Set current tab to active
-    event.currentTarget.className += " active";
-}
+//     // Set all tabs to inactive
+//     tablinks = document.getElementsByClassName("tab-item");
+//     for (i = 0; i < tablinks.length; i++) {
+//         tablinks[i].className = tablinks[i].className.replace(" active", "");
+//     }
+//     // Set current tab to active
+//     event.currentTarget.className += " active";
+// }
 
 function openPlaylistsView(event) {
-    openView(event, 'playlists-content');
+    // openView(event, 'playlists-content');
     loadPlaylists();
 }
 
 function openTracksView(event) {
-    openView(event, 'tracks-content');
+    // openView(event, 'tracks-content');
     loadTracks();
 }
-
-window.addEventListener("load", (event) => {
-    document.getElementById("default-open").click();
-});
