@@ -1,0 +1,82 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Import styles and set headers -->
+    <link rel="stylesheet" href="/Style/style copy.css">
+    <title>App</title>
+    <link rel="icon" type="image/x-icon" href="/Style/favicon.svg">
+</head>
+
+<body>
+    <div id="container">
+        <div id="menu-container">
+            <div id="menu" class="">
+                <div class="menu-item" content-name="home"><p>Home</p></div>
+                <div class="menu-item" content-name="playlists"><p>Playlists</p></div>
+                <div class="menu-item selected" content-name="tracks">
+                    <p>Tracks</p>
+                    <div class="sub-menu-item"> 
+                        <div style="height: 80px"></div>
+                        <button>Play</button>
+                        <button>Save</button>
+                        <div style="height: 30px"></div>
+                        <input type="text" id="lname" name="lname"><br><br>
+                    </div>
+
+                </div>
+                <div class="menu-item" content-name="settings"><p>Settings</p></div>
+                <a class="menu-item" href="/help">logout</a>
+            </div>
+        </div>
+
+        <div class="content-panel" id="content-home" style="display: none;">
+            <p>Welcome to the Home Page</p>
+        </div>
+
+        <div class="content-panel" id="content-playlists" style="display: none;">
+            <p>Welcome to the Playlists Page</p>
+        </div>
+
+        <div class="content-panel" id="content-tracks">
+            <p>Welcome to the Tracks Page</p>
+        </div>
+
+        <div class="content-panel" id="content-settings" style="display: none;">
+            <p>Welcome to the Settings Page</p>
+        </div>
+    </div>
+
+    <script>
+        const items = Array.from(document.getElementsByClassName('menu-item'));
+        const menu = document.getElementById('menu');
+
+        items.forEach(item => {
+            item.addEventListener('click', () => {
+                if(menu.classList.contains('open')) {
+                    // Deselect other
+                    document.querySelector('.menu-item.selected').classList.remove('selected');
+
+                    // choose this one
+                    item.classList.add('selected');
+
+                    // and close menu
+                    menu.classList.remove('open');
+
+                    // and close other content pages
+                    Array.from(document.getElementsByClassName('content-panel')).forEach(panel => {
+                        panel.style.display = 'none';
+                    });
+
+                    // and open content page
+                    document.getElementById('content-' + item.getAttribute('content-name')).style.display = 'block';
+                } else {
+                    // open menu
+                    menu.classList.add('open');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
