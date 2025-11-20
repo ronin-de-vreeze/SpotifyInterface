@@ -61,7 +61,7 @@ body {
     border-radius: 0px 0px 8px 8px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1000px) or (max-height: 700px) {
     /* Reset sidebar position */
     #menu-container {
         position: sticky;
