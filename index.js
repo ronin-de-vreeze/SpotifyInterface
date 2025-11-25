@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
     } else {
         // Homepage with app
         // Todo: Verify token validty
-        res.sendFile((path.join(__dirname, "public/app copy.html")));
+        res.sendFile((path.join(__dirname, "public/app.html")));
     }
 });
 

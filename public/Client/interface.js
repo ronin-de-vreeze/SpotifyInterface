@@ -1,29 +1,29 @@
 async function loadTracks() {
-    const tracksContent = document.getElementById("tracks-table-container");
-    tracksContent.innerHTML = "Loading";
-
+    const tracksTable = document.getElementById("tracks-table");
     const response = await fetch("/tracks", { method: "POST" });
 
     if (response.ok) {
         const tracks = await response.json();
-
-        // Create table
-        const tracksTable = document.createElement('table');
-        tracksContent.innerHTML = "";
-        tracksContent.appendChild(tracksTable);
+        tracksTable.innerHTML = "";
 
         // Foreach playlists, add to table
         for (let track_id in tracks) {
             const tracksRow = tracksTable.insertRow();
             tracksRow.classList.add("track");
             // tracksRow.setAttribute("spotify-id", playlist_id);
-            // tracksRow.setAttribute("spotify-name", playlists[playlist_id].name);
+            tracksRow.setAttribute("spotify-id", track_id);
+
+            const rowPlay = tracksRow.insertCell();
+            rowPlay.innerHTML = "▶";
 
             const rowArtist = tracksRow.insertCell();
             rowArtist.innerHTML = tracks[track_id].artist;
-            
+
             const rowName = tracksRow.insertCell();
             rowName.innerHTML = tracks[track_id].name;
+
+            const rowAdd = tracksRow.insertCell();
+            rowAdd.innerHTML = "+";
 
             const rowTags = tracksRow.insertCell();
             tracks[track_id].playlists.forEach(el => {
@@ -37,11 +37,10 @@ async function loadTracks() {
     } else {
         console.log(response);
     }
-}
+}   
 
 async function loadPlaylists() {
-    const playlistsContent = document.getElementById("content-playlists");
-    playlistsContent.innerHTML = "Loading";
+    const table = document.getElementById("playlist-table");
 
     // Fetch playlists
     const response = await fetch("/playlists");
@@ -57,41 +56,36 @@ async function loadPlaylists() {
         }
 
         // Create table
-        const playlistsTable = document.createElement('table');
-        playlistsContent.innerHTML = "";
-        playlistsContent.appendChild(playlistsTable);
+        table.innerHTML = "";
 
         // Create styling for tags
-        const styleElement = document.createElement('style');
-        styleElement.type = 'text/css';
-        document.head.appendChild(styleElement);
+        const styleElement = document.getElementById('playlists-styling');
 
         // Foreach playlists, add to table
         for (let playlist_id in playlists) {
-            const playlistRow = playlistsTable.insertRow();
+            const playlistRow = table.insertRow();
             playlistRow.classList.add("playlist");
             playlistRow.setAttribute("spotify-id", playlist_id);
             playlistRow.setAttribute("spotify-name", playlists[playlist_id].name);
 
-            const rowIncluded = playlistRow.insertCell();
-            const rowIncludedCheckbox = document.createElement("input");
-            rowIncludedCheckbox.type = "checkbox";
-            rowIncluded.appendChild(rowIncludedCheckbox);
+            if (playlist_id in includedPlaylistsDict) {
+                playlistRow.classList.add("selected");
+            }
 
             const rowName = playlistRow.insertCell();
             rowName.innerHTML = playlists[playlist_id].name;
 
-            const rowInfo = playlistRow.insertCell();
-            rowInfo.innerHTML = `${playlists[playlist_id].owner} | ${playlists[playlist_id].size} songs`;
+            const rowAuthor = playlistRow.insertCell();
+            rowAuthor.innerHTML = `by ${playlists[playlist_id].owner}`;
 
-            if (playlist_id in includedPlaylistsDict) {
-                rowIncludedCheckbox.checked = true;
-            }
+            const rowSongs = playlistRow.insertCell();
+            rowSongs.innerHTML = `${playlists[playlist_id].size} songs`;
 
-            rowIncludedCheckbox.addEventListener('change', function() {
-                console.log("TEST");
-
-                const playlists = [...document.querySelectorAll('.playlist td input:checked')].map(input => input.closest('.playlist'));
+            
+            playlistRow.addEventListener('click', function () {
+                playlistRow.classList.toggle("selected");
+                const playlists = [...document.querySelectorAll('.playlist.selected')].map(input => input.closest('.playlist'));
+                document.querySelector('#playlists h1').innerHTML = `Your Playlists (${playlists.length} selected)`;
                 let selectedPlaylists = {};
                 Array.from(playlists).map((el) => {
                     selectedPlaylists[el.getAttribute("spotify-id")] = el.getAttribute("spotify-name");
@@ -114,12 +108,12 @@ async function loadPlaylists() {
 }
 
 const generateHash = (string) => {
-  let hash = 0;
-  for (const char of string) {
-    hash = (hash << 5) - hash + char.charCodeAt(0);
-    hash |= 0;
-  }
-  return hash;
+    let hash = 0;
+    for (const char of string) {
+        hash = (hash << 5) - hash + char.charCodeAt(0);
+        hash |= 0;
+    }
+    return hash;
 };
 
 // const playButton = document.getElementById("play");
@@ -163,12 +157,35 @@ const generateHash = (string) => {
 //     event.currentTarget.className += " active";
 // }
 
-function openPlaylistsView(event) {
-    // openView(event, 'playlists-content');
-    loadPlaylists();
-}
+document.addEventListener("DOMContentLoaded", async function () {
+    configureMenu();
 
-function openTracksView(event) {
-    // openView(event, 'tracks-content');
+    await loadPlaylists();
     loadTracks();
+});
+
+function configureMenu() {
+    const items = Array.from(document.querySelectorAll('.menu-item'));
+
+    items.forEach(element => {
+        element.addEventListener('click', () => {
+            // Set this tabs as selected
+            items.forEach(otherItem => {
+                if (otherItem === element) {
+                    otherItem.classList.add("active");
+                } else {
+                    otherItem.classList.remove("active");
+                }
+            });
+
+            // Open right content tab
+            Array.from(document.querySelectorAll(`.content-tab`)).forEach(contentTab => {
+                if (element.getAttribute("page-id") == contentTab.id) {
+                    contentTab.classList.add("show");
+                } else {
+                    contentTab.classList.remove("show");
+                }
+            });
+        });
+    });
 }

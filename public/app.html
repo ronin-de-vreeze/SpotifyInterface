@@ -6,39 +6,71 @@
     <link rel="stylesheet" href="/Style/style.css">
     <title>App</title>
     <link rel="icon" type="image/x-icon" href="/Style/favicon.svg">
+    <style id="playlists-styling">
+
+    </style>
 </head>
 
 <body>
-
-    <div class="tab">
-        <div class="tab-item" style="margin-right: 40px;"><b>Spotify Interface</b></div>
-        <div class="tab-item" onclick="openPlaylistsView(event)" id="default-open">Playlists</div> 
-        <div class="tab-item" onclick="openTracksView(event)">Tracks</div> 
-        <!-- <div class="tab-item" onclick="openSearchView(event)">Search</div>  -->
-        <div class="tab-item" onclick="window.location.href = 'logout'" style="margin-left: 40px;"><image src="/Style/logout-svgrepo-com.svg" height="20"></image></div>
-    </div>
-
-    <div id="content-container">
-        <!-- Playlists -->
-        <div id="playlists-content" class="tab-content" style="display: none;">
-        </div>
-
-        <div id="tracks-content" class="tab-content" style="display: none;">
-            <!-- Tracks -->
-            <div id="tracks-table-container">
-            </div>
-            <!-- Search -->
-            <div id="search-bar">
-                <p>Search</p>
-                <input type="text" placeholder="Include">
-                <input type="text" placeholder="Exclude">
+    <div id="container">
+        <div id="menu">
+            <div class="menu-header">Spotify Interface</div>
+            <div class="menu-item active" page-id="dashboard" onclick="loadTracks()">Dashboard</div>
+            <div class="menu-item" page-id="playlists" onclick="loadPlaylists()">Playlists</div>
+            <div class="menu-item" page-id="settings">Settings</div>
+            <div class="menu-item" page-id="about">About</div>
+            <div class="menu-footer">
+                <a href="/donate">Donate</a>
+                <a href="/logout">Logout</a>
             </div>
         </div>
+
+        <div id="content">        
+            <div id="dashboard" class="content-tab show">
+                
+                <div style="padding: 20px; border-radius: 8px; background-color: rgb(204, 204, 204); margin-bottom: 40px; position: sticky; top: 0px;">
+                    <h1>Search</h1>
+                    <p>Search functions here</p>
+                    <p>And more functions here</p>
+                </div>
+                <table id="tracks-table"></table>
+            </div>
+
+            <div id="playlists" class="content-tab">
+                <h1>Your Playlists</h1>
+                <table id="playlist-table"></table>
+            </div>
+
+            <div id="settings" class="content-tab">
+                <h1>Settings</h1>
+                <h3>General</h3>
+                <p>Option 1: <input type="checkbox" checked></p>
+                <p>Option 2: <input type="checkbox"></p>
+
+                <h3>Theme</h3>
+                <p>Select Theme:
+                    <select>
+                        <option>Light</option>
+                        <option>Dark</option>
+                    </select>
+            </div>
+
+            <div id="about" class="content-tab">
+                <h1>About This App</h1>
+                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolorum aspernatur magni tempore ipsam
+                    possimus excepturi facilis nisi delectus aliquam quo quasi, voluptatem doloribus exercitationem
+                    illum, maxime neque magnam labore molestias.</p>
+
+                <h1>About the creator</h1>
+                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolorum aspernatur magni tempore ipsam
+                    possimus excepturi facilis nisi delectus aliquam quo quasi, voluptatem doloribus exercitationem
+                    illum, maxime neque magnam labore molestias.</p>
+            </div>
+        </div>
     </div>
 
-    <!-- Import scripts -->
     <script src="/Client/interface.js"></script>
-    <script src="/Client/search.js"></script>
+    <!-- <script src="/Client/search.js"></script> -->
 </body>
 
 </html>
