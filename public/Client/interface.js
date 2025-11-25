@@ -1,4 +1,11 @@
+
+// popup element
+const popup = document.getElementById("popup");
+const loadingPopup = document.getElementById("loadingPopup");
+var selectedSongID = "";
+
 async function loadTracks() {
+    loadingPopup.classList.add("show");
     const tracksTable = document.getElementById("tracks-table");
     const response = await fetch("/tracks", { method: "POST" });
 
@@ -15,6 +22,20 @@ async function loadTracks() {
 
             const rowPlay = tracksRow.insertCell();
             rowPlay.innerHTML = "▶";
+            rowPlay.addEventListener('click', async () => {
+                const response = await fetch("/play", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify([track_id])
+                });
+
+                if (!response.ok) {
+                    alert("A problem occured, make sure that your SPotify is playing to allow the request...");
+                }
+            });
 
             const rowArtist = tracksRow.insertCell();
             rowArtist.innerHTML = tracks[track_id].artist;
@@ -24,6 +45,10 @@ async function loadTracks() {
 
             const rowAdd = tracksRow.insertCell();
             rowAdd.innerHTML = "+";
+            rowAdd.addEventListener('click', () => {
+                popup.classList.add('show');
+                selectedSongID = track_id;
+            })
 
             const rowTags = tracksRow.insertCell();
             tracks[track_id].playlists.forEach(el => {
@@ -34,12 +59,15 @@ async function loadTracks() {
                 rowTags.appendChild(element);
             });
         }
+        
+        loadingPopup.classList.remove("show");
     } else {
         console.log(response);
     }
 }   
 
 async function loadPlaylists() {
+    loadingPopup.classList.add("show");
     const table = document.getElementById("playlist-table");
 
     // Fetch playlists
@@ -57,12 +85,46 @@ async function loadPlaylists() {
 
         // Create table
         table.innerHTML = "";
+        popup.innerHTML = "";
+
+        const header = table.insertRow();
+        const firstHeader = document.createElement('th');
+        firstHeader.innerHTML = "Title";
+        header.appendChild(firstHeader);
+        const secondHeader = document.createElement('th');
+        secondHeader.innerHTML = "Author";
+        header.appendChild(secondHeader);
+        const thirdHeader = document.createElement('th');
+        thirdHeader.innerHTML = "Content";
+        header.appendChild(thirdHeader);
 
         // Create styling for tags
         const styleElement = document.getElementById('playlists-styling');
 
         // Foreach playlists, add to table
         for (let playlist_id in playlists) {
+            // Add to popup
+            const popupPlaylist = document.createElement("span");
+            popupPlaylist.classList.add("tag");
+            popupPlaylist.setAttribute("spotify-id", playlist_id);
+            popupPlaylist.innerHTML = playlists[playlist_id].name;
+            popup.appendChild(popupPlaylist);
+            popupPlaylist.addEventListener('click', async () => {
+                console.log(`Add playlist ${playlists[playlist_id].name} with ID ${playlist_id} to track ${selectedSongID}`);
+                popup.classList.remove("show");
+
+                const response = await fetch(`/add/${playlist_id}/to/${selectedSongID}`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    alert("A problem occured");
+                    alert(response);
+                }
+
+                loadTracks();
+            });
+
             const playlistRow = table.insertRow();
             playlistRow.classList.add("playlist");
             playlistRow.setAttribute("spotify-id", playlist_id);
@@ -102,6 +164,8 @@ async function loadPlaylists() {
                 }
             `;
         }
+        
+        loadingPopup.classList.remove("show");
     } else {
         console.log(response);
     }
@@ -122,18 +186,18 @@ const generateHash = (string) => {
 //     let selectedTracks = [];
 //     Array.from(tracks).map((el) => { selectedTracks.push(el.getAttribute("spotify-id")) });
 
-//     const response = await fetch("/play", {
-//         method: 'POST',
-//         headers: {
-//             'Accept': 'application/json',
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(selectedTracks)
-//     });
+    // const response = await fetch("/play", {
+    //     method: 'POST',
+    //     headers: {
+    //         'Accept': 'application/json',
+    //         'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(selectedTracks)
+    // });
 
-//     if (!response.ok) {
-//         alert("A problem occured, make sure that your SPotify is playing to allow the request...");
-//     }
+    // if (!response.ok) {
+    //     alert("A problem occured, make sure that your SPotify is playing to allow the request...");
+    // }
 // });
 
 // function openView(event, tabName) {

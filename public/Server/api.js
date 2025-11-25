@@ -75,6 +75,14 @@ router.post("/play", async (req, res) => {
             }
         }
 
+        // skip to next
+        try {
+            await spotifyRequest( `/v1/me/player/next`, accessToken, "POST");
+        } catch (error) {
+            console.error(error);
+            res.sendStatus(500);
+        }
+
         res.sendStatus(200);
     } catch (error) {
         console.error(error);
@@ -191,10 +199,6 @@ router.post("/remove/:playlist_id/from/:track_id", async (req, res) => {
     const playlist_id = req.params.playlist_id;
     const track_id = req.params.track_id;
     const body_json = {
-        // "uris": [
-        //     "spotify:track:" + track_id
-        // ]
-
         "tracks": [
             {
                 "uri": "spotify:track:" + track_id

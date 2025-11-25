@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    <div id="loadingPopup">Loading...</div>
     <div id="container">
         <div id="menu">
             <div class="menu-header">Spotify Interface</div>
@@ -27,13 +28,18 @@
 
         <div id="content">        
             <div id="dashboard" class="content-tab show">
-                
-                <div style="padding: 20px; border-radius: 8px; background-color: rgb(204, 204, 204); margin-bottom: 40px; position: sticky; top: 0px;">
-                    <h1>Search</h1>
-                    <p>Search functions here</p>
-                    <p>And more functions here</p>
+                <div style="position: sticky; top: 0px;">
+                    <div style="padding: 20px; border-radius: 8px; background-color: rgb(204, 204, 204); margin-bottom: 10px;">
+                        <h1>Search</h1>
+                        <p>Search functions here</p>
+                        <p>And more functions here</p>
+                    </div>
+                    <div id="popup">
+                    </div>
                 </div>
-                <table id="tracks-table"></table>
+                
+                <table id="tracks-table">
+                </table>
             </div>
 
             <div id="playlists" class="content-tab">
@@ -43,28 +49,26 @@
 
             <div id="settings" class="content-tab">
                 <h1>Settings</h1>
-                <h3>General</h3>
-                <p>Option 1: <input type="checkbox" checked></p>
-                <p>Option 2: <input type="checkbox"></p>
-
                 <h3>Theme</h3>
                 <p>Select Theme:
-                    <select>
-                        <option>Light</option>
-                        <option>Dark</option>
-                    </select>
+                <select>
+                    <option>Light</option>
+                    <option>Dark</option>
+                </select>
             </div>
 
             <div id="about" class="content-tab">
-                <h1>About This App</h1>
-                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolorum aspernatur magni tempore ipsam
-                    possimus excepturi facilis nisi delectus aliquam quo quasi, voluptatem doloribus exercitationem
-                    illum, maxime neque magnam labore molestias.</p>
+                <h1 style="margin-bottom: 20px;">About This App</h1>
+                <p style="margin-bottom: 20px;">The last year, Spotify has push out some updates that did not sit right with me. After they changed the 'add to playlist' feature, I started to get really anooyed at the direction they are taking the app in. Some features seem nice, but after some time you notice they dont feel intuitive. For example, adding a track to a playlist, defaults to adding it to your liked songs, which is not what I want. Then, there is no 'done' button, you have to pull the UI down, but it doesn't want to close!!</p>
 
-                <h1>About the creator</h1>
-                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolorum aspernatur magni tempore ipsam
-                    possimus excepturi facilis nisi delectus aliquam quo quasi, voluptatem doloribus exercitationem
-                    illum, maxime neque magnam labore molestias.</p>
+                <p style="margin-bottom: 20px;">At the same time I started imagining a different app, and thought about what other features I would add. I got inspired by a YouTube video to implement a tag system, instead of a playlist system. By looking at your library differently (not which songs are in a playlist, but what playlists is a song in) you could make a more intuitive workflow. By learning Node.js is was able to create this wesite, exactelly as I imagined it</p>
+
+                <p style="margin-bottom: 20px;">In the app, you start by selecting the playlists you want to include in the workflow. From now on, these will be called tags. If you switch to the dashboard, all your songs will e visible, with the assiciated tags next to it. Here you can add and remove tags. It is a good idea to start naming playlists in a more general sense, for example, instead of specific moments or people, refer to broad concepts or genres, like 'Acid', 'House', 'Happy' or 'Club'.</p>
+
+                <p>With the advanced searchbar at the top you can include en axclude songs, artists, genres and other metadata. For example, make a playlists that includes all the songs with the tag 'Acid', but not the ones with the tag 'Hardcore'. You can expand upon it by adding all the tracks with tag 'House' that are above 145 BPM.Export or play on spotify and enjoy!</p>
+
+                <h1 style="margin-bottom: 20px; margin-top: 60px;">About the creator</h1>
+                <p>I am a 21 year old Creative Technology student from Amsterdam.</p>
             </div>
         </div>
     </div>
