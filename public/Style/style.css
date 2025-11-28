@@ -9,6 +9,26 @@
      margin: 0px;
  }
 
+ #login-redirect {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px 50px;
+    background-color: rgb(190, 190, 190);
+    box-shadow: black 0px 8px 0px -1px;
+    text-decoration: none;
+    color: black;
+    border-radius: 10px;
+    font-size: 3rem;
+ }
+
+ #login-redirect > img {
+    height: 3rem;
+    width: 3rem;
+    transform: translateY(8px);
+ }
+
  #container {
      display: flex;
      /* align-items: flex-start; */
@@ -34,6 +54,7 @@
 
  .menu-header {
      font-size: 2rem;
+     margin-bottom: 40px;
  }
 
  .menu-item {

@@ -57,6 +57,27 @@ async function loadTracks() {
                 element.classList.add("tag");
                 element.setAttribute("spotify-id", el.id);
                 rowTags.appendChild(element);
+
+                
+                const removeBtn = document.createElement("span");
+                removeBtn.innerHTML = " X";
+                element.appendChild(removeBtn);
+                removeBtn.addEventListener("click", async () => {
+                    console.log(`Remove tag ${ el.name} from track ${tracks[track_id].name}`);
+
+                    const response = await fetch(`/remove/${el.id}/from/${track_id}`, {
+                        method: 'POST'
+                    });
+
+                    if (!response.ok) {
+                        alert("A problem occured");
+                        alert(response);
+                    }
+
+                    loadTracks();
+                });
+
+                // /remove/:playlist_id/from/:track_id
             });
         }
         
@@ -199,27 +220,6 @@ const generateHash = (string) => {
     //     alert("A problem occured, make sure that your SPotify is playing to allow the request...");
     // }
 // });
-
-// function openView(event, tabName) {
-//     var i, tabcontent, tablinks;
-
-//     // Remove all content
-//     tabcontent = document.getElementsByClassName("tab-content");
-//     for (i = 0; i < tabcontent.length; i++) {
-//         tabcontent[i].style.display = "none";
-//     }
-
-//     // Set current content to active
-//     document.getElementById(tabName).style.display = "block";
-
-//     // Set all tabs to inactive
-//     tablinks = document.getElementsByClassName("tab-item");
-//     for (i = 0; i < tablinks.length; i++) {
-//         tablinks[i].className = tablinks[i].className.replace(" active", "");
-//     }
-//     // Set current tab to active
-//     event.currentTarget.className += " active";
-// }
 
 document.addEventListener("DOMContentLoaded", async function () {
     configureMenu();
