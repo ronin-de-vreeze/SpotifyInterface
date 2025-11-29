@@ -1,80 +1,30 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Import styles and set headers -->
-    <link rel="stylesheet" href="/Style/style.css">
-    <title>App</title>
-    <link rel="icon" type="image/x-icon" href="/Style/favicon.svg">
-    <style id="playlists-styling">
 
-    </style>
 </head>
 
 <body>
-    <div id="loadingPopup">Loading...</div>
-    <div id="container">
-        <div id="menu">
-            <div class="menu-header">App</div>
-            <div class="menu-item active" page-id="dashboard" onclick="loadTracks()">Dashboard</div>
-            <div class="menu-item" page-id="playlists" onclick="loadPlaylists()">Playlists</div>
-            <div class="menu-item" page-id="settings">Settings</div>
-            <div class="menu-item" page-id="about">About</div>
-            <div class="menu-footer">
-                <a href="/donate">Donate</a>
-                <a href="/logout">Logout</a>
-            </div>
-        </div>
+    <script>
+        load();
 
-        <div id="content">        
-            <div id="dashboard" class="content-tab show">
-                <div style="position: sticky; top: 0px;">
-                    <div style="padding: 20px; border-radius: 8px; background-color: rgb(204, 204, 204); margin-bottom: 10px;">
-                        <h1>Search</h1>
-                        <p>Search functions here</p>
-                        <p>And more functions here</p>
-                    </div>
-                    <div id="popup">
-                    </div>
-                </div>
-                
-                <table id="tracks-table">
-                </table>
-            </div>
+        async function load() { 
+            try {
+                const res = await fetch('/tracks', {method: 'POST'});
+                if (!res.ok) throw new Error(`Fetch /tracks failed: ${res.status} ${res.statusText}`);
+                const tracks = await res.json();
 
-            <div id="playlists" class="content-tab">
-                <h1>Your Playlists</h1>
-                <table id="playlist-table"></table>
-            </div>
+                const container = document.createElement('div');
+                container.innerHTML = Array.isArray(tracks) && tracks.length
+                    ? tracks.map(t => `<div class="track"><strong>${esc(t.title || t.name || 'Untitled')}</strong>${t.artist || t.artists ? ' — ' + esc(t.artist || (Array.isArray(t.artists) ? t.artists.join(', ') : '')) : ''}</div>`).join('')
+                    : '<div>No tracks</div>';
 
-            <div id="settings" class="content-tab">
-                <h1>Settings</h1>
-                <h3>Theme</h3>
-                <p>Select Theme:
-                <select>
-                    <option>Light</option>
-                    <option>Dark</option>
-                </select>
-            </div>
-
-            <div id="about" class="content-tab">
-                <h1 style="margin-bottom: 20px;">About This App</h1>
-                <p style="margin-bottom: 20px;">The last year, Spotify has push out some updates that did not sit right with me. After they changed the 'add to playlist' feature, I started to get really anooyed at the direction they are taking the app in. Some features seem nice, but after some time you notice they dont feel intuitive. For example, adding a track to a playlist, defaults to adding it to your liked songs, which is not what I want. Then, there is no 'done' button, you have to pull the UI down, but it doesn't want to close!!</p>
-
-                <p style="margin-bottom: 20px;">At the same time I started imagining a different app, and thought about what other features I would add. I got inspired by a YouTube video to implement a tag system, instead of a playlist system. By looking at your library differently (not which songs are in a playlist, but what playlists is a song in) you could make a more intuitive workflow. By learning Node.js is was able to create this wesite, exactelly as I imagined it</p>
-
-                <p style="margin-bottom: 20px;">In the app, you start by selecting the playlists you want to include in the workflow. From now on, these will be called tags. If you switch to the dashboard, all your songs will e visible, with the assiciated tags next to it. Here you can add and remove tags. It is a good idea to start naming playlists in a more general sense, for example, instead of specific moments or people, refer to broad concepts or genres, like 'Acid', 'House', 'Happy' or 'Club'.</p>
-
-                <p>With the advanced searchbar at the top you can include en axclude songs, artists, genres and other metadata. For example, make a playlists that includes all the songs with the tag 'Acid', but not the ones with the tag 'Hardcore'. You can expand upon it by adding all the tracks with tag 'House' that are above 145 BPM.Export or play on spotify and enjoy!</p>
-
-                <h1 style="margin-bottom: 20px; margin-top: 60px;">About the creator</h1>
-                <p>I am a 21 year old Creative Technology student from Amsterdam.</p>
-            </div>
-        </div>
-    </div>
-
-    <script src="/Client/interface.js"></script>
-    <!-- <script src="/Client/search.js"></script> -->
+                document.body.appendChild(container);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
 </body>
 
 </html>
