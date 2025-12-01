@@ -1,30 +1,24 @@
 <html>
 
 <head>
-
+    <link rel="stylesheet" href="/Style/interface.css">
 </head>
 
 <body>
-    <script>
-        load();
+    <div id="container">
+        <div id="menu" style="grid-area: menu;">
+            <h1 id="user-name"></h1>
+            <img id="user-photo"></img>
+        </div>
+        <div id="playlists" style="grid-area: playlists;">
+            <table id="playlists-table"></table>
+        </div>
+        <div id="tracks" style="grid-area: tracks;">
+            <table id="tracks-table"></table>
+        </div>
+    </div>
 
-        async function load() { 
-            try {
-                const res = await fetch('/tracks', {method: 'POST'});
-                if (!res.ok) throw new Error(`Fetch /tracks failed: ${res.status} ${res.statusText}`);
-                const tracks = await res.json();
-
-                const container = document.createElement('div');
-                container.innerHTML = Array.isArray(tracks) && tracks.length
-                    ? tracks.map(t => `<div class="track"><strong>${esc(t.title || t.name || 'Untitled')}</strong>${t.artist || t.artists ? ' — ' + esc(t.artist || (Array.isArray(t.artists) ? t.artists.join(', ') : '')) : ''}</div>`).join('')
-                    : '<div>No tracks</div>';
-
-                document.body.appendChild(container);
-            } catch (err) {
-                console.error(err);
-            }
-        }
-    </script>
+    <script src="\Client\interface.js"></script>
 </body>
 
 </html>

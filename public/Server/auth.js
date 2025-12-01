@@ -53,7 +53,6 @@ router.get('/callback', async (req, res) => {
 
 router.get('/logout', async (req, res) => {
     res.clearCookie('access_token');
-    res.clearCookie('playlists');
     res.redirect('/');
 });
 

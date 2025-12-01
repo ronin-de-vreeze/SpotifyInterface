@@ -24,13 +24,14 @@ app.get('/', (req, res) => {
         res.sendFile((path.join(__dirname, "public/login.html")));
     } else {
         // Homepage with app
-        // Todo: Verify token validty
         res.sendFile((path.join(__dirname, "public/app.html")));
     }
 });
 
+// Use other endpoint from the public directory
 app.use(express.static(__dirname + '/public'));
 
+// Start server
 const PORT = process.env.PORT || process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
