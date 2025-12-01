@@ -15,3 +15,15 @@ td img {
     width: 1rem;
     height: 1rem;
 }
+
+.playlist-item.show {
+    background-color: black;
+    color: white;
+}
+
+.tag {
+    padding: 8px;
+    margin: 3px;
+    border-radius: 5px;
+    display: inline-block;
+}

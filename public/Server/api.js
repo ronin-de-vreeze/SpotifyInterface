@@ -1,9 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-const MAX_RETRIES = 3;
-const includedPlaylists = ["4R2zBJmoxG4FZ1CggA16kg"];
-
 router.get('/info', async (req, res) => {
     try {
         const response = await fetch('https://api.spotify.com/v1/me', {
@@ -26,9 +23,10 @@ router.get('/info', async (req, res) => {
     }
 });
 
-router.get('/tracks', async (req, res) => {
+router.post('/tracks', async (req, res) => {
     try {
-        const tracks = await getTracksWithTags(req.cookies.access_token);
+        // console.log(req.body.included);
+        const tracks = await getTracksWithTags(req.cookies.access_token, JSON.parse(req.body.included));
         res.json(tracks);
     } catch (error) {
         console.error("Failed to get tracks:", error);
@@ -36,10 +34,10 @@ router.get('/tracks', async (req, res) => {
     }
 });
 
-async function getTracksWithTags(token) {
+async function getTracksWithTags(token, includedPlaylists) {
     let [tracks, playlistsWithTracks] = await Promise.all([
         getSavedTracks(token),
-        getPlaylistsWithTracks(token)
+        getPlaylistsWithTracks(token, includedPlaylists)
     ]);
 
     // Project playlists with tracks on the original tracks array
@@ -58,7 +56,7 @@ async function getTracksWithTags(token) {
     return tracks;
 }
 
-async function getPlaylistsWithTracks(token) {
+async function getPlaylistsWithTracks(token, includedPlaylists) {
     let playlists = await getPlaylists(token);
     let playlistsWithTracks = [];
 
@@ -83,7 +81,7 @@ async function getTracksInPlaylist(token, url) {
     let tracks = [];
 
     while (url) {
-        console.log(`Fetching: ${url}`);
+        // console.log(`Fetching: ${url}`);
 
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -95,12 +93,14 @@ async function getTracksInPlaylist(token, url) {
 
         const data = await response.json();
         if (data.items) {
-            tracks.push(...data.items.map(item => ({
+            const validTracks = data.items.filter(item => item.track !== null);
+
+            tracks.push(...validTracks.map(item => ({
                 id: item.track.id,
                 name: item.track.name
             })));
         }
-
+    
         url = data.next;
     }
 
@@ -112,7 +112,7 @@ async function getSavedTracks(token) {
     let url = `https://api.spotify.com/v1/me/tracks?offset=0&limit=50`
 
     while (url) {
-        console.log(`Fetching: ${url}`);
+        // console.log(`Fetching: ${url}`);
 
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -153,7 +153,7 @@ async function getPlaylists(token) {
     let url = `https://api.spotify.com/v1/me/playlists?offset=0&limit=50`
 
     while (url) {
-        console.log(`Fetching: ${url}`);
+        // console.log(`Fetching: ${url}`);
 
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -238,11 +238,6 @@ router.post('/:trackid/remove/:playlistid', async (req, res) => {
 });
 
 router.post('/:trackid/create/:playlistname', async (req, res) => {
-    console.log(req.cookies.user_id);
-    // Create the playlist
-    // Add it to the song given
-    // If succcesfull send 200 and return the id of the playlist
-
     try {
         const data = {
             "name": req.params.playlistname,
@@ -259,10 +254,30 @@ router.post('/:trackid/create/:playlistname', async (req, res) => {
         });
 
         if (!response.ok) {
-            throw new Error(`Spotify API Status error: ${response.status}`);
+            throw new Error(`Spotify API Status error (creating): ${response.status}`);
         }
 
-        res.status(response.status).json({message: (await response.json()).snapshot_id});
+        const playlist_id = (await response.json()).id;
+
+        const add_data = {
+            "uris": [
+                `spotify:track:${req.params.trackid}`
+            ]
+        }
+        const add_response = await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${req.cookies.access_token}` 
+            },
+            body: JSON.stringify(add_data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Spotify API Status error (adding): ${add_response.status}`);
+        }
+
+        res.status(response.status).json({id: playlist_id});
     } catch (error) {
         console.error("Failed to create playlist:", error);
         res.status(500).json({ error: error });
