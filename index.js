@@ -11,8 +11,10 @@ app.use(require('cookie-parser')());
 // Other routes
 const authRoutes = require('./public/Server/auth.js');
 const apiRoutes = require("./public/Server/api.js");
+const modificationRoutes = require("./public/Server/modifications.js");
 app.use("/", authRoutes);
-app.use("/", apiRoutes);
+app.use("/api", apiRoutes);
+app.use("/api", modificationRoutes);
 
 // Home route
 app.get('/', (req, res) => {
@@ -21,12 +23,35 @@ app.get('/', (req, res) => {
     // Check if the token exists
     if (!accessToken) {
         // Homepage to login
-        res.sendFile((path.join(__dirname, "public/login.html")));
+        res.sendFile((path.join(__dirname, "public/Client/login.html")));
     } else {
         // Homepage with app
-        res.sendFile((path.join(__dirname, "public/app.html")));
+        res.sendFile((path.join(__dirname, "public/Client/app.html")));
     }
 });
+
+app.get('/playlists', (req, res) => {
+    const accessToken = req.cookies.access_token;
+
+    // Check if the token exists
+    if (!accessToken) {
+        // Homepage to login
+        res.sendFile((path.join(__dirname, "public/Client/login.html")));
+    } else {
+        // Homepage with app
+        res.sendFile((path.join(__dirname, "public/Client/Playlists.html")));
+    }
+});
+
+app.get('/settings', (req, res) => {
+    res.sendFile((path.join(__dirname, "public/Client/settings.html")));
+});
+
+app.get('/about', (req, res) => {
+    res.sendFile((path.join(__dirname, "public/Client/about.html")));
+});
+
+
 
 // Use other endpoint from the public directory
 app.use(express.static(__dirname + '/public'));

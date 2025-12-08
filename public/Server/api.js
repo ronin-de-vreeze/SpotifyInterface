@@ -1,16 +1,21 @@
+// Start express and import authentication routes
 const express = require("express");
 const router = express.Router();
 
+// Return use information, namely name, id and picture
 router.get('/info', async (req, res) => {
     try {
+        // Make API call
         const response = await fetch('https://api.spotify.com/v1/me', {
             headers: { 'Authorization': `Bearer ${req.cookies.access_token}` }
         });
 
+        // If the repsonse is not a success
         if (!response.ok) { 
             throw new Error(`Spotify API Status error: ${response.status}`);
         }
 
+        // Else extract the body and return data to page
         const data = await response.json();
         res.status(200).send({
             "name": data.display_name,
@@ -23,9 +28,10 @@ router.get('/info', async (req, res) => {
     }
 });
 
+// Get all the tracks the user saved, with their tags
 router.post('/tracks', async (req, res) => {
     try {
-        // console.log(req.body.included);
+        // Get the tracks with tags and return when no prolems encountered
         const tracks = await getTracksWithTags(req.cookies.access_token, JSON.parse(req.body.included));
         res.json(tracks);
     } catch (error) {
@@ -34,17 +40,23 @@ router.post('/tracks', async (req, res) => {
     }
 });
 
+// Return a list of tracks with their respective tags they include
 async function getTracksWithTags(token, includedPlaylists) {
+    // First get all the tracks and all the playlists with the tracks in them
+    // Once successfull, move on
     let [tracks, playlistsWithTracks] = await Promise.all([
         getSavedTracks(token),
         getPlaylistsWithTracks(token, includedPlaylists)
     ]);
 
     // Project playlists with tracks on the original tracks array
+    // For each playlists, and for each track in that playlist
     playlistsWithTracks.forEach(playlist => {
         playlist.tracks.forEach(track => { 
+            // If it is in the liked tracks
             const foundTrack = tracks.find(trackObject => track.id === trackObject.id);
             if (foundTrack) {
+                // Add the playlist as a tag to the found track
                 foundTrack.tags.push({
                     id: playlist.id,
                     name: playlist.name
@@ -56,74 +68,82 @@ async function getTracksWithTags(token, includedPlaylists) {
     return tracks;
 }
 
+// Get the playlists and the tracks in them
 async function getPlaylistsWithTracks(token, includedPlaylists) {
+    // Get all the playlists the user has saved
     let playlists = await getPlaylists(token);
-    let playlistsWithTracks = [];
 
-    playlists.forEach(async (playlist) => {
-        // Check if it is in the selected playlists
-        if(includedPlaylists.includes(playlist.id)) {
-            // Get all items in a playlist
-            const tracksInPlaylist = await getTracksInPlaylist(token,`${playlist.tracks}?offset=0&limit=50`);
-            
-            playlistsWithTracks.push({
+    // Foreach playlists, get the tracks in the playlists in parallel
+    // Create an array of objects holding id, name and an array of tracks
+    const trackPromises = playlists
+        .filter(playlist => includedPlaylists.includes(playlist.id))
+        .map(async (playlist) => {
+            const tracksInPlaylist = await getTracksInPlaylist(token, playlist.tracks); 
+            return {
                 id: playlist.id,
                 name: playlist.name,
                 tracks: tracksInPlaylist
-            });
-        }                
-    });
+            };
+        });
 
-    return playlistsWithTracks;
+    // Return all at once when finished
+    return Promise.all(trackPromises);
 }
 
+// Fetch all the tracks in a playlist
 async function getTracksInPlaylist(token, url) {
     let tracks = [];
 
     while (url) {
-        // console.log(`Fetching: ${url}`);
-
+        // Fetch the API endpoint
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
+        // Throw error if the API returns an error
         if (!response.ok) {
             throw new Error(`Spotify API Status error: ${response.status}`);
         }
 
+        // Otherwise, decode and loop over the items
         const data = await response.json();
         if (data.items) {
+            // If the returned item is a track, add it to the list
             const validTracks = data.items.filter(item => item.track !== null);
-
             tracks.push(...validTracks.map(item => ({
                 id: item.track.id,
                 name: item.track.name
             })));
         }
     
+        // Loop while there is more data to find
         url = data.next;
     }
 
     return tracks;
 }
 
+// Get all the tracks in the users liked songs
 async function getSavedTracks(token) {
     let tracks = [];
     let url = `https://api.spotify.com/v1/me/tracks?offset=0&limit=50`
 
+    // Loop while there are more songs to fetch
     while (url) {
-        // console.log(`Fetching: ${url}`);
-
+        // API call
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
+        // Returned an error
         if (!response.ok) {
             throw new Error(`Spotify API Status error: ${response.status}`);
         }
 
+        // Otherwise decode
         const data = await response.json();
         if (data.items) {
+            // Add data to the list
             tracks.push(...data.items.map(item => ({
                 id: item.track.id,
                 name: item.track.name,
@@ -138,6 +158,7 @@ async function getSavedTracks(token) {
     return tracks;
 }
 
+// Return all the playlists saved by the user
 router.get('/playlists', async (req, res) => {
     try {
         const playlists = await getPlaylists(req.cookies.access_token);
@@ -148,21 +169,24 @@ router.get('/playlists', async (req, res) => {
     }
 });
 
+// Get all the playlists saved by the current user
 async function getPlaylists(token) {
     let playlists = [];
     let url = `https://api.spotify.com/v1/me/playlists?offset=0&limit=50`
 
+    // While there are more playlists to fetch
     while (url) {
-        // console.log(`Fetching: ${url}`);
-
+        // API call
         const response = await fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
+        // Error
         if (!response.ok) {
             throw new Error(`Spotify API Status error: ${response.status}`);
         }
 
+        // Append data to list if the call was succesfull
         const data = await response.json();
         if (data.items) {
             playlists.push(...data.items.map(item => ({
@@ -175,113 +199,12 @@ async function getPlaylists(token) {
                 image: (item.images && item.images.length > 0) ? item.images[0].url : null
             })));
         }
+
+        // Repeat
         url = data.next;
     }
 
     return playlists;
 }
-
-router.post('/:trackid/add/:playlistid', async (req, res) => {
-    try {
-        const data = {
-            "uris": [
-                `spotify:track:${req.params.trackid}`
-            ]
-        }
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${req.params.playlistid}/tracks`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${req.cookies.access_token}` 
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Spotify API Status error: ${response.status}`);
-        }
-
-        res.sendStatus(response.status);
-    } catch (error) {
-        console.error("Failed to add playlist to track:", error);
-        res.status(500).json({ error: error });
-    }
-});
-
-router.post('/:trackid/remove/:playlistid', async (req, res) => {
-    try {
-        const data = {
-            "tracks": [
-                {
-                    "uri": `spotify:track:${req.params.trackid}`
-                }
-            ]
-        }
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${req.params.playlistid}/tracks`, {
-            method: 'DELETE',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${req.cookies.access_token}` 
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Spotify API Status error: ${response.status}`);
-        }
-
-        res.sendStatus(response.status);
-    } catch (error) {
-        console.error("Failed to remove playlist from track:", error);
-        res.status(500).json({ error: error });
-    }
-});
-
-router.post('/:trackid/create/:playlistname', async (req, res) => {
-    try {
-        const data = {
-            "name": req.params.playlistname,
-            "public": false
-        }
-
-        const response = await fetch(`https://api.spotify.com/v1/users/${req.cookies.user_id}/playlists`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${req.cookies.access_token}` 
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Spotify API Status error (creating): ${response.status}`);
-        }
-
-        const playlist_id = (await response.json()).id;
-
-        const add_data = {
-            "uris": [
-                `spotify:track:${req.params.trackid}`
-            ]
-        }
-        const add_response = await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${req.cookies.access_token}` 
-            },
-            body: JSON.stringify(add_data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Spotify API Status error (adding): ${add_response.status}`);
-        }
-
-        res.status(response.status).json({id: playlist_id});
-    } catch (error) {
-        console.error("Failed to create playlist:", error);
-        res.status(500).json({ error: error });
-    }
-});
 
 module.exports = router;

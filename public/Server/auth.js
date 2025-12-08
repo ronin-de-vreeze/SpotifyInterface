@@ -50,7 +50,7 @@ router.get('/callback', async (req, res) => {
     }
 });
 
-
+// Log the user out and clear cookies
 router.get('/logout', async (req, res) => {
     res.clearCookie('access_token');
     res.redirect('/');

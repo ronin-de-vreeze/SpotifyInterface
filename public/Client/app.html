@@ -1,0 +1,127 @@
+<html>
+
+<head>
+    <title>App</title>
+    <link rel="stylesheet" href="/Style/style.css">
+    <link rel="icon" type="image/x-icon" href="/Style/logo2.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="/Style/logo2.svg" alt="" width="30" height="30">
+                SPOTIFY
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                style="box-shadow: none;">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav column-gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link p-2 active" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link p-2" href="/playlists">Playlists</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link p-2" href="/settings">Settings</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto column-gap-3">
+                    <li class="nav-item">
+                        <a class="nav-link p-2" href="https://tikkie.me">Donate</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link p-2" href="https://ronindevreezeut.github.io/portfolio/">About me</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link border border-dark rounded p-2" href="/logout">Log out</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container-lg mt-5">
+        <span
+            class="badge align-items-center p-1 pe-4 text-dark-emphasis bg-light-subtle border border-dark-subtle rounded-pill">
+            <img id="user-photo" class="rounded-circle me-2" width="40" height="40" src="" alt="">
+            <span id="user-name"></span>
+        </span>
+        <p class="display-3">
+            Your tracks
+            
+        </p>
+    </div>
+
+
+    <div class="container-lg p-5 mt-5 rounded bg-light border">
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Include</span>
+            <input type="text" class="form-control" placeholder="tags, artists, metadata ...">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">Exclude</span>
+            <input type="text" class="form-control" placeholder="tags, artists, metadata ...">
+        </div>
+        <div class="row gap-2">
+            <button type="button" class="btn btn-primary col-lg-5">Play</button>
+            <button type="button" class="btn btn-primary col-lg-5">Export</button>
+            <button type="button" class="btn btn-outline-primary col-lg">Clear</button>
+        </div>
+    </div>
+
+    <div class="container-lg p-0 mt-5">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Artist</th>
+                    <th scope="col">Tags</th>
+                </tr>
+            </thead>
+            <tbody id="tracks-table">
+                <!-- <tr>
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>@fat</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>Larry</td>
+                    <td>the Bird</td>
+                    <td>@twitter</td>
+                </tr> -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="col-md-4 d-flex align-items-center">
+                <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"></a>
+                <span class="mb-3 mb-md-0 text-body-secondary">Ronin de Vreeze</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="\Client\interface.js"></script>
+</body>
+
+</html>
