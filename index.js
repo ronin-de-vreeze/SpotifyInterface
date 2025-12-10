@@ -42,7 +42,7 @@ app.get('/playlists', (req, res) => {
         res.redirect("/");
     } else {
         // Homepage with app
-        res.sendFile((path.join(__dirname, "public/Client/Playlists.html")));
+        res.sendFile((path.join(__dirname, "public/Client/playlists.html")));
     }
 });
 
