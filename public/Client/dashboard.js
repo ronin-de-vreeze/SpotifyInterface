@@ -82,7 +82,8 @@ function addTrackToTable(track) {
     const tagsCell = trackitem.insertCell();
     tagsCell.classList.add("track-tags");
     track.tags.forEach((tag) => {
-        tagsCell.appendChild(createTagOnTrack(tag.name, tag.id, track.id));
+        const item = createTagOnTrack(tag.name, tag.id, track.id);
+        tagsCell.appendChild(item);
     });
 
     // const response = await fetch(`/api/${track.id}/create/${addName.value}`, { method: 'POST' })
