@@ -19,9 +19,10 @@ app.use("/api", modificationRoutes);
 // Home route
 app.get('/', (req, res) => {
     const accessToken = req.cookies.access_token;
+    const userId = req.cookies.user_id;
 
     // Check if the token exists
-    if (!accessToken) {
+    if (!accessToken || !userId) {
         // Homepage to login
         res.sendFile((path.join(__dirname, "public/Client/login.html")));
     } else {
@@ -30,28 +31,20 @@ app.get('/', (req, res) => {
     }
 });
 
+// Playlist selection page
 app.get('/playlists', (req, res) => {
     const accessToken = req.cookies.access_token;
+    const userId = req.cookies.user_id;
 
     // Check if the token exists
-    if (!accessToken) {
+    if (!accessToken || !userId) {
         // Homepage to login
-        res.sendFile((path.join(__dirname, "public/Client/login.html")));
+        res.redirect("/");
     } else {
         // Homepage with app
         res.sendFile((path.join(__dirname, "public/Client/Playlists.html")));
     }
 });
-
-app.get('/settings', (req, res) => {
-    res.sendFile((path.join(__dirname, "public/Client/settings.html")));
-});
-
-app.get('/about', (req, res) => {
-    res.sendFile((path.join(__dirname, "public/Client/about.html")));
-});
-
-
 
 // Use other endpoint from the public directory
 app.use(express.static(__dirname + '/public'));

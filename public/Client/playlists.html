@@ -1,35 +1,40 @@
 <html>
 
 <head>
-    <title>Playlist</title>
-    <link rel="stylesheet" href="/Style/style.css">
+    <title>Playlists</title>
     <link rel="icon" type="image/x-icon" href="/Style/logo2.svg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Add custom styling to playlists that are not included -->
+    <style>
+        .playlist-tag-item:not(.include) {
+            background-color: white !important;
+            color: grey !important;
+            border: 1px solid grey !important;
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="/Style/logo2.svg" alt="" width="30" height="30">
-                SPOTIFY
+            <a class="navbar-brand bg-dark text-light rounded px-2" href="/">
+                ./ SPOTIFY
             </a>
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                style="box-shadow: none;">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav column-gap-3">
                     <li class="nav-item">
-                        <a class="nav-link p-2" href="/">Dashboard</a>
+                        <a class="nav-link p-2" href="/">Tracks</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link p-2 active" href="/playlists">Playlists</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link p-2" href="/settings">Settings</a>
                     </li>
                 </ul>
 
@@ -48,25 +53,40 @@
         </div>
     </nav>
 
-    <div class="container-lg mt-5">
-        <p class="display-3">
-            Playlists
-        </p>
-        <div class="alert alert-danger" role="alert">
-            Not implemented yet
+    <!-- Content -->
+    <div class="container-lg pt-5">
+        <!-- Infobox -->
+        <div class="card bg-dark text-light rounded mb-5 p-5">
+            <div class="card-body">
+                <p class="h2">Configure your tags</p>
+                <p class="card-text">Spotify's playlists are treated as tags in this app. configue them here.</p>
+                <p class="card-text">Select which of your playlists are considered as tags. You can also see playlists that you do not own or do not have the right to edit. You can still add them and they will show up on your tracks, you just can't add them to tracks.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="container">
+        <!-- Header for user owned -->
+        <p class="h3">Your playlists</p>
+        <div id="playlists-list-owned" class="d-inline-flex flex-wrap">
+
+        </div>
+
+        <!-- Header for non user owned -->
+        <p class="h3 mt-5">Other</p>
+        <div id="playlists-list" class="d-inline-flex flex-wrap">
+
+        </div>
+
+        <!-- Footer -->
         <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
             <div class="col-md-4 d-flex align-items-center">
                 <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"></a>
-                <span class="mb-3 mb-md-0 text-body-secondary">Ronin de Vreeze</span>
+                <span class="mb-3 mb-md-0 text-body-secondary">2025 | by Ronin de Vreeze</span>
             </div>
         </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="\Client\playlists.js"></script>
 </body>
 
 </html>

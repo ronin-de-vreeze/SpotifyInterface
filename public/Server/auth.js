@@ -6,7 +6,7 @@ const querystring = require('node:querystring');
 router.get('/login', (req, res) => {
     const authUrl = 'https://accounts.spotify.com/authorize?' + querystring.stringify({
         response_type: 'code',
-        client_id: process.env.SPOTIFY_CLIENT_ID, 
+        client_id: process.env.SPOTIFY_CLIENT_ID,
         scope: process.env.SPOTIFY_SCOPE,
         redirect_uri: process.env.SPOTIFY_REDIRECT
     });
@@ -38,10 +38,19 @@ router.get('/callback', async (req, res) => {
 
             // Token exchange succes, set cookie for an hour, redirect to home to show app
             res.cookie('access_token', data.access_token, { httpOnly: true, sameSite: 'lax', maxAge: data.expires_in * 1000 });
+
+            const responseID = await fetch('https://api.spotify.com/v1/me', {
+                headers: {
+                    'Authorization': 'Bearer ' + data.access_token
+                }
+            });
+            const dataID = await responseID.json();
+            res.cookie('user_id', dataID.id, { maxAge: data.expires_in * 1000 });
+            
             return res.redirect(`/`);
         } catch (err) {
             // Json parse error
-            return res.status(400).send("Problem parsing json: " + response);
+            return res.status(400).send("Problem parsing json: " + response + " " + err);
         }
 
     } else {
@@ -53,6 +62,7 @@ router.get('/callback', async (req, res) => {
 // Log the user out and clear cookies
 router.get('/logout', async (req, res) => {
     res.clearCookie('access_token');
+    res.clearCookie('user_id');
     res.redirect('/');
 });
 
