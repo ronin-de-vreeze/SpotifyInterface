@@ -1,15 +1,20 @@
-// const example = [
-//     "house disco",
-//     "house acid",
-//     "house fast",
-//     "house disco fast",
-//     "rap house",
-//     "rap disco"
-// ]
-
 var map = [];
 const search = document.getElementById("searchbar")
+const buttonAdd = document.getElementById("button-addon1")
+const rules = document.getElementById("rules")
 
+buttonAdd.addEventListener('click', () => {
+    const newRule = document.createElement("div");
+    newRule.classList.add("query-row");
+    newRule.innerHTML = search.value;
+    rules.appendChild(newRule);
+    search.value = "";
+});
+
+function clearSearch() {
+    search.value = "";
+    rules.innerHTML = "";
+}
 search.addEventListener('input', (event) => {
     map = []
 
