@@ -2,7 +2,6 @@
 
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="/Style/style.css">
     <link rel="icon" type="image/x-icon" href="/Style/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,6 +13,12 @@
             font-family: "Outfit", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
+        }
+
+        .playlist-tag-item:not(.include) {
+            background-color: white !important;
+            color: grey !important;
+            border: 1px solid grey !important;
         }
     </style>
 </head>
@@ -41,7 +46,7 @@
     </nav>
 
     <!-- Content -->
-    <div class="container-lg mt-5">
+    <div class="container-sm mt-5">
         <div class="row">
             <!-- First box -->
             <div class="col-12 my-5">

@@ -1,13 +1,21 @@
 <html>
 
+
 <head>
     <title>Playlists</title>
     <link rel="icon" type="image/x-icon" href="/Style/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Add custom styling to playlists that are not included -->
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+        * {
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+        }
+
         .playlist-tag-item:not(.include) {
             background-color: white !important;
             color: grey !important;
@@ -20,8 +28,8 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container">
-            <a class="navbar-brand bg-dark text-light rounded px-2" href="/">
-                ./ SPOTIFY
+            <a class="navbar-brand" href="/">
+                Spotipy
             </a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -46,7 +54,14 @@
                         <a class="nav-link p-2" href="https://ronindevreezeut.github.io/portfolio/">About me</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link border border-dark rounded p-2" href="/logout">Log out</a>
+                        <a class="nav-link" href="/logout">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
+                            </svg>
+                            Logout
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -54,14 +69,13 @@
     </nav>
 
     <!-- Content -->
-    <div class="container-lg pt-5">
+    <div class="container-sm mt-5">
         <!-- Infobox -->
-        <div class="card bg-dark text-light rounded mb-5 p-5">
-            <div class="card-body">
-                <p class="h2">Configure your tags</p>
-                <p class="card-text">Spotify's playlists are treated as tags in this app. configue them here.</p>
-                <p class="card-text">Select which of your playlists are considered as tags. You can also see playlists that you do not own or do not have the right to edit. You can still add them and they will show up on your tracks, you just can't add them to tracks.</p>
-            </div>
+        <div class="container border-start border-4 px-5 my-5">
+            <div class="h1 fw-light">Select which playlists you want to behave as tags</div>
+            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vitae, culpa delectus fuga, ea
+                molestiae sint eius fugiat quos consectetur hic dolorum accusantium omnis repudiandae beatae
+                praesentium veritatis. Temporibus, earum laboriosam.</p>
         </div>
 
         <!-- Header for user owned -->
