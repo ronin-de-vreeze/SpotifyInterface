@@ -14,13 +14,13 @@ function stringToColor(str) {
 }
 
 async function addNewTag(event) {
-    const id = event.target.closest(".track-item").getAttribute("spotify-id");
-    const name = document.getElementById("trackCreateName").value;
-    const response = await fetch(`/api/${id}/create/${name}`, { method: 'POST' })
+    const trackId = event.target.closest(".track-item").getAttribute("spotify-id");
+    const newName = document.getElementById("trackCreateName").value;
+    const response = await fetch(`/api/${trackId}/create/${newName}`, { method: 'POST' })
 
     if (response.ok) {
         const data = await response.json();
-        event.target.closest(".track-tags").appendChild(createTagOnTrack(name, data.id, id));
+        event.target.closest(".track-tags").appendChild(createTagOnTrack(newName, data.id, trackId));
 
         // add to list of included playlists
         const current = JSON.parse(localStorage.getItem("playlists"));

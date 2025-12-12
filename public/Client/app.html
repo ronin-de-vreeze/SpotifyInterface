@@ -1,18 +1,29 @@
 <html>
 
+
 <head>
-    <title>App</title>
+    <title>Tracks</title>
     <link rel="icon" type="image/x-icon" href="/Style/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+        * {
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+        }
+    </style>
 </head>
 
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container">
-            <a class="navbar-brand bg-dark text-light rounded px-2" href="/">
-                ./ SPOTIFY
+            <a class="navbar-brand" href="/">
+                Spotipy
             </a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -37,7 +48,14 @@
                         <a class="nav-link p-2" href="https://ronindevreezeut.github.io/portfolio/">About me</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link border border-dark rounded p-2" href="/logout">Log out</a>
+                        <a class="nav-link" href="/logout">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
+                            </svg>
+                            Logout
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -45,30 +63,27 @@
     </nav>
 
     <!-- Content -->
-    <div class="container pt-5">
+    <div class="container-sm mt-5">
+        <!-- Add playlist popup -->
         <div id="popup" class="card d-none card-body my-4">
-            <div class="d-flex">
-                <div class="flex-fill">
-                    <div class="input-group mb-3 flex-fill">
-                        <input id="trackCreateName" type="text" class="form-control" placeholder="Add new tag"
-                            aria-label="Recipient's username" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" onclick="addNewTag(event)">+</button>
-                        </div>
-                    </div>
-                </div>
+            <!-- Add new tag -->
+            <div class="input-group mb-3">
+                <input id="trackCreateName" type="text" class="form-control" placeholder="Add new tag">
+                <button class="btn btn-outline-secondary" type="button" onclick="addNewTag(event)">+</button>
             </div>
+
+            <!-- List of existing tags -->
             <div id="popup-items" class="container d-inline-flex flex-wrap gap-1 p-0">
             </div>
         </div>
 
         <!-- Search box -->
-        <div class="container-lg p-0 rounded border border-dark border-2">
+        <div class="container-lg p-0 border border-dark border-2">
             <!-- Inputs -->
-            <div class="container-lg p-5 pt-5 pb-5 bg-dark text-light">
-                <p class="h1 text-light">Search</p>
-                    <input id="searchbar" type="text" class="form-control" placeholder="" aria-label="Example text with button addon"
-                        aria-describedby="button-addon1">
+            <div class="container-lg p-3 bg-dark text-light">
+                <!-- <p class="h1 text-light">Search</p> -->
+                <input id="searchbar" type="text" class="form-control rounded-pill" placeholder="Filter tracks based in artist, tags and playlists ... "
+                    aria-label="Example text with button addon" aria-describedby="button-addon1">
             </div>
 
             <!-- Buttons -->
