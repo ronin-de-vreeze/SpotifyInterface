@@ -3,64 +3,80 @@
 <head>
     <title>Login</title>
     <link rel="stylesheet" href="/Style/style.css">
-    <link rel="icon" type="image/x-icon" href="/Style/logo2.svg">
+    <link rel="icon" type="image/x-icon" href="/Style/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+        * {
+            font-family: "Outfit", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+        }
+    </style>
 </head>
 
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container">
-            <a class="navbar-brand bg-dark text-light rounded px-2" href="/">
-                ./ SPOTIFY
+            <a class="navbar-brand" href="/">
+                Spotipy
             </a>
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto column-gap-3">
-                    <li class="nav-item">
-                        <a class="nav-link p-2" href="https://ronindevreezeut.github.io/portfolio/">About me</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link bg-dark text-light rounded p-2" href="/login">Login with Spotify</a>
-                    </li>
-                </ul>
-            </div>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" class="bi bi-arrow-right-square"
+                            viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
         </div>
     </nav>
 
-
-    <div class="container-lg p-2 mt-5">
-        <div class="card">
-            <div class="row card-body p-0">
-                <div class="col-sm-9">
-                    <div class="container p-5">
-                        <h5 class="card-title">Dynamic playlists generation</h5>
-                        <p class="card-text">This app works with tags instead of playlists, even thought behind the
-                            screens they are treated equally. This means that you can dynamically construct your
-                            playlists to include and exclude certain tags, genres, metadata and artists. Try it out
-                            today!</p>
-                    </div>
+    <!-- Content -->
+    <div class="container-lg mt-5">
+        <div class="row">
+            <!-- First box -->
+            <div class="col-12 my-5">
+                <div class="container p-0 my-4 w-100" style="height: 400px;">
+                    <img src="/Client/firstPicture.png" class="w-100 h-100 img-fluid object-fit-cover rounded">
                 </div>
+                <div class="container border-start border-4 px-5">
+                    <div class="h1 fw-light">Turn your playlists into tags without breaking your workflow</div>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vitae, culpa delectus fuga, ea
+                        molestiae sint eius fugiat quos consectetur hic dolorum accusantium omnis repudiandae beatae
+                        praesentium veritatis. Temporibus, earum laboriosam.</p>
+                </div>
+            </div>
 
-                <div class="col-sm-3" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXv0HHgqbxTX4mYHExJVNTyY5L0h56NlGMBw&s'); 
-                        background-size: cover; 
-                        background-position: center center;">
+            <!-- Second box -->
+            <div class="col-12 my-5">
+                <div class="container p-0 my-4 w-100" style="height: 400px;">
+                    <img src="/Client/secondPicture.png" class="w-100 h-100 img-fluid object-fit-cover rounded">
+                </div>
+                <div class="container border-start border-4 px-5">
+                    <div class="h1 fw-light">Turn your playlists into tags without breaking your workflow</div>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vitae, culpa delectus fuga, ea
+                        molestiae sint eius fugiat quos consectetur hic dolorum accusantium omnis repudiandae beatae
+                        praesentium veritatis. Temporibus, earum laboriosam.</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="d-grid gap-2 col-4 mx-auto">
-        <a class="text-light p-3 text-center rounded bg-dark m-5" href="/login" style="text-decoration: none;">Try it
-            out &rarr;</a>
-    </div>
+        <!-- Call to action -->
+        <div class="my-5 d-flex justify-content-center">
+            <a class="h2 text-light bg-primary p-3" href="/login">Try it now!</a>
+        </div>
 
-    <div class="container">
+
+        <!-- Footer -->
         <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
             <div class="col-md-4 d-flex align-items-center">
                 <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1"></a>
