@@ -13,6 +13,28 @@ function stringToColor(str) {
     return Math.abs(hash % 360);
 }
 
+async function addNewTag(event) {
+    const id = event.target.closest(".track-item").getAttribute("spotify-id");
+    const name = document.getElementById("trackCreateName").value;
+    const response = await fetch(`/api/${id}/create/${name}`, { method: 'POST' })
+
+    if (response.ok) {
+        const data = await response.json();
+        event.target.closest(".track-tags").appendChild(createTagOnTrack(name, data.id, id));
+
+        // add to list of included playlists
+        const current = JSON.parse(localStorage.getItem("playlists"));
+        console.log(current);
+        current.push(data.id);
+        console.log(current);
+        newString = JSON.stringify(current);
+        console.log(newString);
+        localStorage.setItem("playlists", newString);
+        popup.classList.add("d-none");
+        addPlaylistsToPopup();
+    }
+}
+
 function createBadge(name, button = null) {
     // Create badge
     const tagItem = document.createElement("span");
@@ -85,13 +107,6 @@ function addTrackToTable(track) {
         const item = createTagOnTrack(tag.name, tag.id, track.id);
         tagsCell.appendChild(item);
     });
-
-    // const response = await fetch(`/api/${track.id}/create/${addName.value}`, { method: 'POST' })
-
-    // if (response.ok) {
-    //     const data = await response.json();
-    //     createTag(tagsCell, addName.value, data.id, track.id);
-    // }
 }
 
 // Executed on startup
@@ -135,46 +150,51 @@ async function load() {
             });
         });
 
-        fetch('/api/playlists', { method: 'GET' }).then(data => {
-            data.json().then(data_json => {
-                const includedSaved = JSON.parse(localStorage.getItem("playlists"));
-
-                data_json.forEach(playlist => {
-                    if (includedSaved.includes(playlist.id)) {
-                        const currentBadge = createBadge(playlist.name,
-                            {
-                                icon: // Cross icon
-                                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                                    </svg>`,
-
-                                function: // Remove this track
-                                    async () => {
-
-                                    }
-                            }
-                        );
-
-                        currentBadge.classList.add("playlist-badge");
-                        currentBadge.addEventListener("click", async () => {
-                            const trackid = currentBadge.closest(".track-item").getAttribute("spotify-id");
-                            console.log(`Add playlist with ID ${playlist.id} to song with id ${trackid}`)
-
-                            const response = await fetch(`/api/${trackid}/add/${playlist.id}`, { method: 'POST' })
-
-                            if (response.ok) {
-                                console.log(response);
-                                currentBadge.closest(".track-tags").appendChild(createTagOnTrack(playlist.name, playlist.id, trackid));
-                                popup.classList.add("d-none");
-                            }
-                        });
-                        popupItems.appendChild(currentBadge);
-                    }
-                });
-            });
-        });
+        addPlaylistsToPopup();
     } catch (err) {
         // Return errors
         console.error(err);
     }
+}
+
+function addPlaylistsToPopup() {
+    fetch('/api/playlists', { method: 'GET' }).then(data => {
+        data.json().then(data_json => {
+            popupItems.innerHTML = "";
+            const includedSaved = JSON.parse(localStorage.getItem("playlists"));
+
+            data_json.forEach(playlist => {
+                if (includedSaved.includes(playlist.id)) {
+                    const currentBadge = createBadge(playlist.name,
+                        {
+                            icon: // Cross icon
+                                `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                                    </svg>`,
+
+                            function: // Remove this track
+                                async () => {
+
+                                }
+                        }
+                    );
+
+                    currentBadge.classList.add("playlist-badge");
+                    currentBadge.addEventListener("click", async () => {
+                        const trackid = currentBadge.closest(".track-item").getAttribute("spotify-id");
+                        console.log(`Add playlist with ID ${playlist.id} to song with id ${trackid}`)
+
+                        const response = await fetch(`/api/${trackid}/add/${playlist.id}`, { method: 'POST' })
+
+                        if (response.ok) {
+                            console.log(response);
+                            currentBadge.closest(".track-tags").appendChild(createTagOnTrack(playlist.name, playlist.id, trackid));
+                            popup.classList.add("d-none");
+                        }
+                    });
+                    popupItems.appendChild(currentBadge);
+                }
+            });
+        });
+    });
 }

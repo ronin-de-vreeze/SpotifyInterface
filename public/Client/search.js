@@ -1,44 +1,67 @@
 var map = [];
 const search = document.getElementById("searchbar")
-const buttonAdd = document.getElementById("button-addon1")
-const rules = document.getElementById("rules")
-
-buttonAdd.addEventListener('click', () => {
-    const newRule = document.createElement("div");
-    newRule.classList.add("query-row");
-    newRule.innerHTML = search.value;
-    rules.appendChild(newRule);
-    search.value = "";
-});
 
 function clearSearch() {
     search.value = "";
-    rules.innerHTML = "";
+    evaluate()
 }
 search.addEventListener('input', (event) => {
+    evaluate();
+});
+
+function evaluate() {
     map = []
 
-    const currentValue = event.target.value;
+    const currentValue = search.value;
     const separated = currentValue.split(" | ");
 
     separated.forEach(element => {
         map.push(analyseSubstring(element.trim()));
     });
 
-    // example.forEach(element => {
-    //     evaluateTrack(element);
-    // });
-
     const items = document.querySelectorAll(".track-item");
     console.log(items);
     items.forEach(item => {
-        if (evaluateTrack(item.children[0].innerHTML)) {
+        let queryForTrack = item.children[1].innerHTML;
+        for (let i = 0; i < item.children[2].children.length; i++) {
+            queryForTrack += ` ${item.children[2].children[i].children[0].innerHTML}`
+        }
+
+        if (evaluateTrack(queryForTrack)) {
             item.classList.remove("d-none");
         } else {
             item.classList.add("d-none");
         }
     });
-});
+}
+
+async function playTracks() {
+    let includedTracks = [];
+    const items = document.querySelectorAll(".track-item");
+    items.forEach(item => {
+        if (!item.classList.contains("d-none")) {
+            includedTracks.push(`spotify:track:${item.getAttribute("spotify-id")}`);
+        }
+    });
+
+    try {
+        const response = await fetch(`/api/play`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(includedTracks)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Spotify API Status error (playing tracks): ${response.status}`);
+        } else {
+            console.log("succesfully played tracks");
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
 
 function evaluateTrack(element) {
     let includedAcrossRows = false;

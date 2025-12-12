@@ -5,31 +5,6 @@
     <link rel="icon" type="image/x-icon" href="/Style/logo2.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .query-row {
-            position: relative;
-            /* Needed for absolute positioning of lines */
-            margin-left: 47px;
-        }
-
-        .query-row::before {
-            content: '';
-            position: absolute;
-            left: -30px;
-            /* Move line into the padding area */
-            top: -35;
-
-            width: 20px;
-            /* Width of the horizontal connector */
-            height: 200%;
-            /* Stop at the vertical middle of the row */
-
-            /* The Line Styling */
-            border-left: 2px solid #ccc;
-            border-bottom: 2px solid #ccc;
-            border-bottom-left-radius: 10px;
-        }
-    </style>
 </head>
 
 <body>
@@ -73,18 +48,17 @@
     <div class="container pt-5">
         <div id="popup" class="card d-none card-body my-4">
             <div class="d-flex">
-                <p class="h4 me-4">Add tag</p>
                 <div class="flex-fill">
                     <div class="input-group mb-3 flex-fill">
-                        <input type="text" class="form-control" placeholder="Recipient's username"
+                        <input id="trackCreateName" type="text" class="form-control" placeholder="Add new tag"
                             aria-label="Recipient's username" aria-describedby="basic-addon2">
                         <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button">Button</button>
+                            <button class="btn btn-outline-secondary" type="button" onclick="addNewTag(event)">+</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div id="popup-items" class="container d-inline-flex gap-1 p-0">
+            <div id="popup-items" class="container d-inline-flex flex-wrap gap-1 p-0">
             </div>
         </div>
 
@@ -93,20 +67,14 @@
             <!-- Inputs -->
             <div class="container-lg p-5 pt-5 pb-5 bg-dark text-light">
                 <p class="h1 text-light">Search</p>
-
-                <div class="input-group mb-3">
-                    <button class="btn bg-light text-dark" type="button" id="button-addon1">+</button>
                     <input id="searchbar" type="text" class="form-control" placeholder="" aria-label="Example text with button addon"
                         aria-describedby="button-addon1">
-                </div>
-                <div id="rules">
-                </div>
             </div>
 
             <!-- Buttons -->
             <div class="d-flex flex-column flex-sm-row gap-2">
                 <button onclick="playTracks()" type="button" class="btn btn-light flex-fill p-3">Play</button>
-                <button onclick="exportTracks()" type="button" class="btn btn-light flex-fill p-3">Export</button>
+                <!-- <button onclick="exportTracks()" type="button" class="btn btn-light flex-fill p-3">Export</button> -->
                 <button onclick="clearSearch()" type="button" class="btn btn-light flex-fill p-3">Clear</button>
             </div>
         </div>

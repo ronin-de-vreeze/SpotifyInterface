@@ -104,5 +104,30 @@ router.post('/:trackid/create/:playlistname', async (req, res) => {
     }
 });
 
+router.post('/play', async (req, res) => {
+    try {
+        const data = {
+            "uris": req.body
+        }
+
+        const response = await fetch(`https://api.spotify.com/v1/me/player/play`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${req.cookies.access_token}` 
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Spotify API Status error (creating): ${response.status}`);
+        }
+        
+        res.sendStatus(response.status);
+    } catch (error) {
+        console.error("Failed to create playlist:", error);
+        res.status(500).json({ error: error });
+    }
+});
 
 module.exports = router;
