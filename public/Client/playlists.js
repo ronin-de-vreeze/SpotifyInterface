@@ -1,41 +1,25 @@
 load();
 
+// Elements
 const playlistsListOwned = document.getElementById("playlists-list-owned");
 const playlistsList = document.getElementById("playlists-list");
-
-function getId() {
-  const cookie = `; ${document.cookie}`;
-  const parts = cookie.split(`; user_id=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}
+const includedSaved = JSON.parse(localStorage.getItem("playlists") || "[]");
 
 // Executed on startup
 async function load() {
     try {
-        const id = getId();
-        console.log(document.cookie);
+        const infoRes = await fetch('/api/info');
+        if (!infoRes.ok) throw new Error(`Info fetch error: ${infoRes.status} ${infoRes.statusText}`);
+        const infoJson = await infoRes.json();
+        const user_id = infoJson?.id || "";
 
-        fetch('/api/playlists', { method: 'GET' }).then(data => {
-            data.json().then(data_json => {
-                const includedSaved = JSON.parse(localStorage.getItem("playlists"));
-
-                data_json.forEach(playlist => {
-                    const item = createBadge(playlist.name, playlist.id, playlist.size, playlist.ownername);
-                    if (playlist.ownerid === id) {
-                        playlistsListOwned.appendChild(item);
-                    } else {
-                        playlistsList.appendChild(item);
-                    }
-
-                    if (includedSaved.includes(playlist.id)) {
-                        item.classList.add("include");
-                    }
-                });
-            });
-        });
+        const res = await fetch('/api/playlists');
+        if (!res.ok) throw new Error(`Playlists fetch error: ${res.status} ${res.statusText}`);
+        const data_json = await res.json();
+        if (!Array.isArray(data_json)) throw new Error('Invalid playlists response');
+        data_json.forEach(playlist => createPlaylistBadge(playlist, user_id));
     } catch (err) {
-        // Return errors
-        console.error(err);
+        console.error('Failed to load playlists', err);
     }
 }
 
@@ -48,52 +32,74 @@ function stringToColor(str) {
     return Math.abs(hash % 360);
 }
 
-function createBadge(name, id, size, owner) {
+// Create badge
+function createPlaylistBadge(playlist, user_id) {
+    // Basic validation
+    if (!playlist || !playlist.id) return;
+    const id = playlist.id;
+    const name = String(playlist.name || '');
+    const ownername = String(playlist.ownername || '');
+    const ownerid = playlist.ownerid || '';
+    const size = playlist.size != null ? String(playlist.size) : '';
+
+    // Ensure target lists exist
+    if (!playlistsListOwned || !playlistsList) return;
+
     // Create badge
-    const tagItem = document.createElement("span");
-    tagItem.setAttribute("spotify-id", id);
-    tagItem.classList.add("playlist-tag-item", "badge", "d-inline-flex", "align-items-center", "p-2", "rounded-pill", "m-1");
-    tagItem.style.backgroundColor = `hsl(${stringToColor(name)}, 100%, 85%)`;
-    tagItem.style.color = `hsl(${stringToColor(name)}, 100%, 18%)`;
+    const item = document.createElement("span");
+    item.setAttribute("spotify-id", id);
+    item.classList.add("playlist-tag-item", "badge", "d-inline-flex", "align-items-center", "p-2", "rounded-pill", "m-1");
+    item.style.backgroundColor = `hsl(${stringToColor(name)}, 100%, 85%)`;
+    item.style.color = `hsl(${stringToColor(name)}, 100%, 18%)`;
 
     // Name
     const tagText = document.createElement("span");
     tagText.classList.add("px-1");
-    tagText.innerHTML = name;
-    tagItem.appendChild(tagText);
+    tagText.textContent = name;
+    item.appendChild(tagText);
 
     // Add Seperator
     const seperator = document.createElement("span");
     seperator.classList.add("vr", "mx-2");
-    tagItem.appendChild(seperator);
+    item.appendChild(seperator);
 
     // Owner
     const tagOwner = document.createElement("span");
     tagOwner.classList.add("px-1");
-    tagOwner.innerHTML = owner;
-    tagItem.appendChild(tagOwner);
+    tagOwner.textContent = ownername;
+    item.appendChild(tagOwner);
 
     // Add Seperator
     const seperator2 = document.createElement("span");
     seperator2.classList.add("vr", "mx-2");
-    tagItem.appendChild(seperator2);
+    item.appendChild(seperator2);
 
     // Size
     const tagSize = document.createElement("span");
     tagSize.classList.add("px-1");
-    tagSize.innerHTML = size;
-    tagItem.appendChild(tagSize);
+    tagSize.textContent = size;
+    item.appendChild(tagSize);
 
-    tagItem.addEventListener("click", () => {
-        tagItem.classList.toggle("include");
-        updateincludedPlaylists();
+    // Include or exclude once clicked
+    item.addEventListener("click", () => {
+        item.classList.toggle("include");
+        updateIncludedPlaylists();
     });
 
-    return tagItem;
+    // Add it to the right list
+    if (ownerid === user_id) {
+        playlistsListOwned.appendChild(item);
+    } else {
+        playlistsList.appendChild(item);
+    }
+
+    // Add include class if in included playlists
+    if (includedSaved.includes(id)) item.classList.add("include");
 }
 
-function updateincludedPlaylists() {
+// Set the included playlists in localStorage again
+function updateIncludedPlaylists() {
     const selectedElements = Array.from(document.querySelectorAll(".playlist-tag-item.include"));
-    const arrayIncluded = selectedElements.map((el) => { return el.getAttribute("spotify-id"); });
+    const arrayIncluded = selectedElements.map((el) => el.getAttribute("spotify-id"));
     localStorage.setItem("playlists", JSON.stringify(arrayIncluded));
 }

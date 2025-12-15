@@ -1,7 +1,9 @@
 const tracksTable = document.getElementById("tracks-table")
 const popup = document.getElementById("popup")
-const popupItems = document.getElementById("popup-items")
+const popupItems = document.getElementById("popup-playlists")
+const newName = document.getElementById("playlist-name").value;
 
+// Replace innerhtml with textContent
 load();
 
 // Create a color based on the hash of a ID
@@ -15,7 +17,6 @@ function stringToColor(str) {
 
 async function addNewTag(event) {
     const trackId = event.target.closest(".track-item").getAttribute("spotify-id");
-    const newName = document.getElementById("trackCreateName").value;
     const response = await fetch(`/api/${trackId}/create/${newName}`, { method: 'POST' })
 
     if (response.ok) {
@@ -46,7 +47,7 @@ function createBadge(name, button = null) {
     tagItem.appendChild(tagText);
 
     // Set content
-    tagText.innerHTML = name;
+    tagText.textContent = name;
 
     // Create button if defined
     if (button) {
@@ -96,9 +97,9 @@ function addTrackToTable(track) {
 
     // Cell with the track name and artist name
     const nameCell = trackitem.insertCell();
-    nameCell.innerHTML = track.name;
+    nameCell.textContent = track.name;
     const artistCell = trackitem.insertCell();
-    artistCell.innerHTML = track.artist;
+    artistCell.textContent = track.artist;
 
     // Cell containing all the tags
     const tagsCell = trackitem.insertCell();
@@ -121,15 +122,6 @@ async function load() {
                 popup.classList.remove("d-none");
                 popup.setAttribute("currentID", trackRow.getAttribute("spotify-id"));
             }
-        });
-
-        // Set user image and name 
-        fetch('/api/info', { method: 'GET' }).then(data => {
-            data.json().then(data_json => {
-                // document.getElementById("user-name").innerHTML = `Welcome ${data_json.name}`
-                // document.getElementById("user-photo").src = data_json.image;
-                document.cookie = `user_id=${data_json.id}`;
-            });
         });
 
         // Fetch the tracks
@@ -160,7 +152,7 @@ async function load() {
 function addPlaylistsToPopup() {
     fetch('/api/playlists', { method: 'GET' }).then(data => {
         data.json().then(data_json => {
-            popupItems.innerHTML = "";
+            popupItems.textContent = "";
             const includedSaved = JSON.parse(localStorage.getItem("playlists"));
 
             data_json.forEach(playlist => {
