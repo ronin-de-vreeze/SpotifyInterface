@@ -1,13 +1,133 @@
 var map = [];
 const search = document.getElementById("searchbar")
+const savedFilters = document.getElementById("saved-filters")
 
+loadFilters();
+
+// On key input evaluate again
+search.addEventListener('input', (event) => {
+    evaluate();
+});
+
+function loadFilters() {
+    // Clear current DOM
+    savedFilters.innerHTML = "";
+
+    // Load the filters from the localstorage
+    if (localStorage.getItem("filters") === null) {
+        console.log("No filters stored in localstorage yet");
+        localStorage.setItem("filters", JSON.stringify([]));
+    } else {
+        // For each filter, add them to the DOM element
+        const filters = JSON.parse(localStorage.getItem("filters"));
+        filters.forEach(filter => {
+            let item = document.createElement("a");
+            item.classList.add("dropdown-item");
+            item.textContent = filter.name;
+            savedFilters.appendChild(item);
+
+            // Add click events
+            item.addEventListener("click", () => {
+                search.value = filter.query;
+                evaluate();
+            });
+        });
+    }
+}
+
+function clearFilter() {
+    if (localStorage.getItem("filters") === null) {
+        console.log("No filters to clear");
+    } else {
+        const filterName = prompt("Type the name of the filter to clear");
+        const filters = JSON.parse(localStorage.getItem("filters"));
+        const newFilters = filters.filter(item => item.name !== filterName);
+        localStorage.setItem("filters", JSON.stringify(newFilters));
+
+        // Clear and reload filters
+        loadFilters();
+    }
+}
+
+function saveFilter() {
+    const filterName = prompt("New filter");
+
+    if (localStorage.getItem("filters") === null) {
+        console.log("No filters stored in localstorage yet");
+        localStorage.setItem("filters", JSON.stringify([
+            { name: filterName, query: search.value }
+        ]));
+    } else {
+        const filters = JSON.parse(localStorage.getItem("filters"));
+        filters.push({ name: filterName, query: search.value });
+        localStorage.setItem("filters", JSON.stringify(filters));
+    }
+    // Clear and reload filters
+    loadFilters();
+}
+
+// Clear the searchox and update
 function clearSearch() {
     search.value = "";
     evaluate()
 }
-search.addEventListener('input', (event) => {
-    evaluate();
-});
+
+function exportToPlaylist() {
+    alert("Not implemented yet");
+}
+
+function addToQueue() {
+    alert("Not implemented yet");
+}
+
+// function setFilter() {
+
+// }
+
+// Return all the tracks currently visible
+function getIncludedTracks() {
+    let includedTracks = [];
+    const items = document.querySelectorAll(".track-item");
+
+    // Loop over every DOM item and check if its visible
+    items.forEach(item => {
+        if (!item.classList.contains("d-none")) {
+            // Add Spotify URI to list
+            includedTracks.push(`spotify:track:${item.getAttribute("spotify-id")}`);
+        }
+    });
+
+    if (includedTracks.length === 0) {
+        throw new Error(`No tracks to play`);
+    }
+
+    return includedTracks;
+}
+
+// Play the currently included tracks
+async function playTracks() {    
+    try {
+        // Call Spotify to set player context
+        const response = await fetch(`/api/play`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(getIncludedTracks())
+        });
+
+        // Error
+        if (!response.ok) {
+            throw new Error(`Spotify API Status error (playing tracks): ${response.status}`);
+        }
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
+
 
 function evaluate() {
     map = []
@@ -20,7 +140,7 @@ function evaluate() {
     });
 
     const items = document.querySelectorAll(".track-item");
-    console.log(items);
+    // console.log(items);
     items.forEach(item => {
         let queryForTrack = item.children[1].innerHTML;
         for (let i = 0; i < item.children[2].children.length; i++) {
@@ -33,34 +153,6 @@ function evaluate() {
             item.classList.add("d-none");
         }
     });
-}
-
-async function playTracks() {
-    let includedTracks = [];
-    const items = document.querySelectorAll(".track-item");
-    items.forEach(item => {
-        if (!item.classList.contains("d-none")) {
-            includedTracks.push(`spotify:track:${item.getAttribute("spotify-id")}`);
-        }
-    });
-
-    try {
-        const response = await fetch(`/api/play`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(includedTracks)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Spotify API Status error (playing tracks): ${response.status}`);
-        } else {
-            console.log("succesfully played tracks");
-        }
-    } catch (err) {
-        console.log(err);
-    }
 }
 
 function evaluateTrack(element) {
