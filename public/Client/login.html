@@ -5,20 +5,14 @@
     <link rel="icon" type="image/x-icon" href="/Style/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
+        /* Font */
         * {
             font-family: "Outfit", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
-        }
-
-        .playlist-tag-item:not(.include) {
-            background-color: white !important;
-            color: grey !important;
-            border: 1px solid grey !important;
         }
     </style>
 </head>
@@ -27,17 +21,32 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                Spotipy
+            <!-- Icon and name -->
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <!-- SVG Icon -->
+                <svg width="30" height="30" viewBox="0 0 100 100">
+                    <circle cx="45" cy="50" r="35" fill="#fff" stroke="#ccc" stroke-width="10" />
+                    <circle cx="45" cy="50" r="20" fill="#ccc" />
+                    <rect x="40" y="32" width="60" height="68" rx="15" fill="white" />
+                    <line x1="55" y1="50" x2="85" y2="50" stroke="#e62802" stroke-width="15" stroke-linecap="round" />
+                    <line x1="55" y1="70" x2="85" y2="70" stroke="#ed5b3e" stroke-width="15" stroke-linecap="round" />
+                    <line x1="55" y1="90" x2="85" y2="90" stroke="#ff8269" stroke-width="15" stroke-linecap="round" />
+
+                </svg>
+                <span class="ms-2">Rótulo</span>
             </a>
 
-            <ul class="navbar-nav ms-auto">
+            <!-- Login on the right side -->
+            <ul class="navbar-nav ms-auto column-gap-3">
                 <li class="nav-item">
                     <a class="nav-link" href="/login">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" class="bi bi-arrow-right-square"
-                            viewBox="0 0 16 16">
+                        Login
+
+                        <!-- Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                            class="bi bi-arrow-right-short" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
-                                d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm4.5 5.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z" />
+                                d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
                         </svg>
                     </a>
                 </li>
@@ -50,34 +59,52 @@
         <div class="row">
             <!-- First box -->
             <div class="col-12 my-5">
+                <!-- Span image -->
                 <div class="container p-0 my-4 w-100" style="height: 400px;">
-                    <img src="/Client/firstPicture.png" class="w-100 h-100 img-fluid object-fit-cover rounded">
+                    <img src="/Style/pexels-theshuttervision-15447298.jpg"
+                        class="w-100 h-100 img-fluid object-fit-cover rounded">
                 </div>
+
+                <!-- Info -->
                 <div class="container border-start border-4 px-5">
                     <div class="h1 fw-light">Turn your playlists into tags without breaking your workflow</div>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vitae, culpa delectus fuga, ea
-                        molestiae sint eius fugiat quos consectetur hic dolorum accusantium omnis repudiandae beatae
-                        praesentium veritatis. Temporibus, earum laboriosam.</p>
+                    <p>Tags are a more intuitive system for sorting music, allowing you to express yourself more easily
+                        and maintain a big library of music better. The advanced filter feature selectes tracks
+                        dynamically meaing you spend less time on finding which songs fit well together, and more time
+                        listening.</p>
                 </div>
             </div>
 
+
             <!-- Second box -->
             <div class="col-12 my-5">
+                <!-- Span image -->
                 <div class="container p-0 my-4 w-100" style="height: 400px;">
-                    <img src="/Client/thirdPicture.png" class="w-100 h-100 img-fluid object-fit-cover rounded">
+                    <img src="/Style/pexels-monstera-1173651.jpg"
+                        class="w-100 h-100 img-fluid object-fit-cover rounded">
                 </div>
+
+                <!-- Info -->
                 <div class="container border-start border-4 px-5">
-                    <div class="h1 fw-light">Turn your playlists into tags without breaking your workflow</div>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vitae, culpa delectus fuga, ea
-                        molestiae sint eius fugiat quos consectetur hic dolorum accusantium omnis repudiandae beatae
-                        praesentium veritatis. Temporibus, earum laboriosam.</p>
+                    <div class="h1 fw-light">Integrated with Spotify</div>
+                    <p>Use you existing Spotify library with all the tracks you love, sort and filter them here and hit
+                        play, it automatically adds them you your queue!</p>
                 </div>
             </div>
         </div>
 
         <!-- Call to action -->
         <div class="my-5 d-flex justify-content-center">
-            <a class="h2 text-light bg-primary p-3" href="/login">Try it now!</a>
+            <a class="h2 text-light p-3" style="text-decoration: none; background-color: #e62802;" href="/login">
+                <span>Try it now!</span>
+
+                <!-- Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="3rem" height="3rem" fill="currentColor"
+                    class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
+                </svg>
+            </a>
         </div>
 
 

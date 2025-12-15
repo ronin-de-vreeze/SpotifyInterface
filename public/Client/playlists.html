@@ -10,16 +10,18 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
+        /* Font */
         * {
             font-family: "Outfit", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
         }
 
+        /* Make unincluded playlists grey */
         .playlist-tag-item:not(.include) {
             background-color: white !important;
-            color: grey !important;
-            border: 1px solid grey !important;
+            color: rgb(187, 187, 187) !important;
+            border: 1px solid rgb(187, 187, 187) !important;
         }
     </style>
 </head>
@@ -28,8 +30,17 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                Spotipy
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <svg width="30" height="30" viewBox="0 0 100 100" >
+                    <circle cx="45" cy="50" r="35" fill="#fff" stroke="#ccc" stroke-width="10"/>
+                    <circle cx="45" cy="50" r="20" fill="#ccc" />
+                    <rect x="40" y="32" width="60" height="68" rx="15" fill="white"/>
+                    <line x1="55" y1="50" x2="85" y2="50" stroke="#e62802" stroke-width="15" stroke-linecap="round" />
+                    <line x1="55" y1="70" x2="85" y2="70" stroke="#ed5b3e" stroke-width="15" stroke-linecap="round" />
+                    <line x1="55" y1="90" x2="85" y2="90" stroke="#ff8269" stroke-width="15" stroke-linecap="round" />
+
+                </svg>
+                <span class="ms-2">Rótulo</span>
             </a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -48,7 +59,7 @@
 
                 <ul class="navbar-nav ms-auto column-gap-3">
                     <li class="nav-item">
-                        <a class="nav-link p-2" href="https://tikkie.me">Donate</a>
+                        <a class="nav-link p-2" href="https://tikkie.me/pay/1h42fv76g7f06o6nlfq3">Donate</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link p-2" href="https://ronindevreezeut.github.io/portfolio/">About me</a>
@@ -73,20 +84,18 @@
         <!-- Infobox -->
         <div class="container border-start border-4 px-5 my-5">
             <div class="h1 fw-light">Select which playlists you want to behave as tags</div>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vitae, culpa delectus fuga, ea
-                molestiae sint eius fugiat quos consectetur hic dolorum accusantium omnis repudiandae beatae
-                praesentium veritatis. Temporibus, earum laboriosam.</p>
+            <p>Select the playlists you want to treat as tags. Any playlist can be a tag, even the ones you don't own, in that cast you can filter them like other tags, but you can't add and remove them from individual songs.</p>
         </div>
 
         <!-- Header for user owned -->
         <p class="h3">Your playlists</p>
-        <div id="playlists-list-owned" class="d-inline-flex flex-wrap">
+        <div id="playlists-list-owned" class="d-flex flex-wrap overflow-hidden">
 
         </div>
 
         <!-- Header for non user owned -->
         <p class="h3 mt-5">Other</p>
-        <div id="playlists-list" class="d-inline-flex flex-wrap">
+        <div id="playlists-list" class="d-flex flex-wrap overflow-hidden">
 
         </div>
 

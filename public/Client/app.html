@@ -10,6 +10,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
+        /* Font */
         * {
             font-family: "Outfit", sans-serif;
             font-optical-sizing: auto;
@@ -22,8 +23,17 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg border-bottom">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                Spotipy
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <svg width="30" height="30" viewBox="0 0 100 100">
+                    <circle cx="45" cy="50" r="35" fill="#fff" stroke="#ccc" stroke-width="10" />
+                    <circle cx="45" cy="50" r="20" fill="#ccc" />
+                    <rect x="40" y="32" width="60" height="68" rx="15" fill="white" />
+                    <line x1="55" y1="50" x2="85" y2="50" stroke="#e62802" stroke-width="15" stroke-linecap="round" />
+                    <line x1="55" y1="70" x2="85" y2="70" stroke="#ed5b3e" stroke-width="15" stroke-linecap="round" />
+                    <line x1="55" y1="90" x2="85" y2="90" stroke="#ff8269" stroke-width="15" stroke-linecap="round" />
+
+                </svg>
+                <span class="ms-2">Rótulo</span>
             </a>
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -42,7 +52,7 @@
 
                 <ul class="navbar-nav ms-auto column-gap-3">
                     <li class="nav-item">
-                        <a class="nav-link p-2" href="https://tikkie.me">Donate</a>
+                        <a class="nav-link p-2" href="https://tikkie.me/pay/1h42fv76g7f06o6nlfq3">Donate</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link p-2" href="https://ronindevreezeut.github.io/portfolio/">About me</a>
@@ -63,54 +73,72 @@
     </nav>
 
     <!-- Content -->
-    <div class="container-sm mt-5">
+    <div class="container-sm">
         <!-- Add playlist popup -->
         <div id="popup" class="card d-none card-body my-4">
             <!-- Add new tag -->
             <div class="input-group mb-3">
-                <input id="trackCreateName" type="text" class="form-control" placeholder="Add new tag">
+                <input id="playlist-name" type="text" class="form-control" placeholder="Add new tag">
                 <button class="btn btn-outline-secondary" type="button" onclick="addNewTag(event)">+</button>
             </div>
 
             <!-- List of existing tags -->
-            <div id="popup-items" class="container d-inline-flex flex-wrap gap-1 p-0">
+            <div id="popup-playlists" class="container d-inline-flex flex-wrap gap-1 p-0">
             </div>
         </div>
 
         <!-- Search box -->
-        <div class="container-lg p-0 border border-dark border-2">
-            <!-- Inputs -->
-            <div class="container-lg p-3 bg-dark text-light">
-                <!-- <p class="h1 text-light">Search</p> -->
-                <input id="searchbar" type="text" class="form-control rounded-pill" placeholder="Filter tracks based in artist, tags and playlists ... "
-                    aria-label="Example text with button addon" aria-describedby="button-addon1">
-            </div>
+        <div class="input-group mt-2 pb-5 d-flex flex-column flex-md-row gap-2">
+            <!-- Searchbar -->
+            <textarea rows="1" id="searchbar" class="form-control w-auto"
+                placeholder="Filter tracks based in artist, tags and playlists ... "></textarea>
 
-            <!-- Buttons -->
-            <div class="d-flex flex-column flex-sm-row gap-2">
-                <button onclick="playTracks()" type="button" class="btn btn-light flex-fill p-3">Play</button>
-                <!-- <button onclick="exportTracks()" type="button" class="btn btn-light flex-fill p-3">Export</button> -->
-                <button onclick="clearSearch()" type="button" class="btn btn-light flex-fill p-3">Clear</button>
+            <!-- Responsive buttons -->
+            <div class="btn-group">
+                <!-- Default play button and dropdown appending it -->
+                <button onclick="playTracks()" type="button" class="btn px-5 btn-outline-secondary">Play</button>
+                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown">
+                </button>
+
+                <!-- Buttons in the dropdown menu -->
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a onclick="addToQueue()" class="dropdown-item" href="#">Add to queue</a></li>
+                    <li><a onclick="exportToPlaylist()" class="dropdown-item" href="#">Export to playlist</a></li>
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li><a onclick="saveFilter()" class="dropdown-item" href="#">Save this filter</a></li>
+                    <li><a onclick="clearFilter()" class="dropdown-item" href="#">Remove filter</a></li>
+                    <li><a onclick="clearSearch()" class="dropdown-item" href="#">Clear</a></li>
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+                    <li id="saved-filters">
+                    </li>
+                </ul>
             </div>
         </div>
 
         <!-- Table -->
-        <div class="container-lg p-0 mt-5">
-            <table class="table" style="table-layout: fixed; width: 100%;">
-                <!-- Header and column sizes -->
-                <thead>
-                    <tr>
-                        <th scope="col" class="col-3">Title</th>
-                        <th scope="col" class="col-3">Artist</th>
-                        <th scope="col" class="col-6">Tags</th>
-                    </tr>
-                </thead>
+        <table class="table" style="table-layout: fixed; width: 100%;">
+            <!-- Header and column sizes -->
+            <thead>
+                <tr>
+                    <th scope="col" class="col-3">Title</th>
+                    <th scope="col" class="col-3">Artist</th>
+                    <th scope="col" class="col-6">Tags</th>
+                </tr>
+            </thead>
 
-                <!-- Content -->
-                <tbody id="tracks-table">
-                </tbody>
-            </table>
-        </div>
+            <!-- Content -->
+            <tbody id="tracks-table">
+            </tbody>
+        </table>
 
         <!-- Footer -->
         <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
@@ -121,6 +149,7 @@
         </footer>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="\Client\dashboard.js"></script>
     <script src="\Client\search.js"></script>
