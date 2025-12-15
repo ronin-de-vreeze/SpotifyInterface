@@ -4,35 +4,46 @@ const savedFilters = document.getElementById("saved-filters")
 
 loadFilters();
 
-// On key input evaluate again
-search.addEventListener('input', (event) => {
-    evaluate();
-});
-
 function loadFilters() {
     // Clear current DOM
     savedFilters.innerHTML = "";
 
-    // Load the filters from the localstorage
-    if (localStorage.getItem("filters") === null) {
-        console.log("No filters stored in localstorage yet");
+    // Try to parse the stored filters
+    let filters;
+    try {
+        filters = JSON.parse(localStorage.getItem("filters")) || [];
+    } catch (e) {
+        console.warn("Problem encountered when parsing JSON filters");
         localStorage.setItem("filters", JSON.stringify([]));
-    } else {
-        // For each filter, add them to the DOM element
-        const filters = JSON.parse(localStorage.getItem("filters"));
-        filters.forEach(filter => {
-            let item = document.createElement("a");
-            item.classList.add("dropdown-item");
-            item.textContent = filter.name;
-            savedFilters.appendChild(item);
-
-            // Add click events
-            item.addEventListener("click", () => {
-                search.value = filter.query;
-                evaluate();
-            });
-        });
     }
+
+    // If no valid filters found
+    if (filters.length === 0) {
+        // Appen message to the list to show no playlists are stored
+        let item = document.createElement("span");
+        item.classList.add("text-muted", "px-3");
+        item.textContent = "No playlists yet";
+        savedFilters.appendChild(item);
+
+        return;
+    }
+
+    // For each filter, add them to the DOM element
+    filters.forEach(filter => {
+        // Create element
+        let item = document.createElement("a");
+        item.classList.add("dropdown-item");
+        item.textContent = filter.name;
+
+        // Add click event to set the filter in the searchbar
+        item.addEventListener("click", () => {
+            search.value = filter.query;
+            evaluateSearch();
+        });
+        
+        // Show on page
+        savedFilters.appendChild(item);
+    });
 }
 
 function clearFilter() {
@@ -69,7 +80,7 @@ function saveFilter() {
 // Clear the searchox and update
 function clearSearch() {
     search.value = "";
-    evaluate()
+    evaluateSearch()
 }
 
 function exportToPlaylist() {
@@ -79,10 +90,6 @@ function exportToPlaylist() {
 function addToQueue() {
     alert("Not implemented yet");
 }
-
-// function setFilter() {
-
-// }
 
 // Return all the tracks currently visible
 function getIncludedTracks() {
@@ -126,10 +133,13 @@ async function playTracks() {
 }
 
 
+// On key input evaluate again
+search.addEventListener('input', (event) => {
+    evaluateSearch();
+});
 
-
-
-function evaluate() {
+// Evaluate the current search
+function evaluateSearch() {
     map = []
 
     const currentValue = search.value;
