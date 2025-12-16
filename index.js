@@ -19,10 +19,9 @@ app.use("/api", modificationRoutes);
 // Home route
 app.get('/', (req, res) => {
     const accessToken = req.cookies.access_token;
-    const userId = req.cookies.user_id;
 
     // Check if the token exists
-    if (!accessToken || !userId) {
+    if (!accessToken) {
         // Homepage to login
         res.sendFile((path.join(__dirname, "public/Client/login.html")));
     } else {
@@ -34,10 +33,9 @@ app.get('/', (req, res) => {
 // Playlist selection page
 app.get('/playlists', (req, res) => {
     const accessToken = req.cookies.access_token;
-    const userId = req.cookies.user_id;
 
     // Check if the token exists
-    if (!accessToken || !userId) {
+    if (!accessToken) {
         // Homepage to login
         res.redirect("/");
     } else {

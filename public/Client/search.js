@@ -165,6 +165,7 @@ function evaluateSearch() {
     });
 }
 
+// Evaluate whether a track matches the current search
 function evaluateTrack(element) {
     let includedAcrossRows = false;
 
@@ -197,6 +198,7 @@ function evaluateTrack(element) {
     return includedAcrossRows;
 }
 
+// Analyse a substring into include/exclude tokens
 function analyseSubstring(str) {
     let substringMap = []
     const separated = str.split(" ");

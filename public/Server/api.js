@@ -32,7 +32,7 @@ router.get('/info', async (req, res) => {
 router.post('/tracks', async (req, res) => {
     try {
         // Get the tracks with tags and return when no prolems encountered
-        const tracks = await getTracksWithTags(req.cookies.access_token, JSON.parse(req.body.included));
+        const tracks = await getTracksWithTags(req.cookies.access_token, req.body.included);
         res.json(tracks);
     } catch (error) {
         console.error("Failed to get tracks:", error);

@@ -1,22 +1,11 @@
-<html>
-
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Tracks</title>
     <link rel="icon" type="image/x-icon" href="/Style/logo.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
-
-        /* Font */
-        * {
-            font-family: "Outfit", sans-serif;
-            font-optical-sizing: auto;
-            font-style: normal;
-        }
-    </style>
+    <link rel="stylesheet" href="/Style/main.css">
 </head>
 
 <body>
@@ -78,8 +67,8 @@
         <div id="popup" class="card d-none card-body my-4">
             <!-- Add new tag -->
             <div class="input-group mb-3">
-                <input id="playlist-name" type="text" class="form-control" placeholder="Add new tag">
-                <button class="btn btn-outline-secondary" type="button" onclick="addNewTag(event)">+</button>
+                <input id="popup-new-playlist-name" type="text" class="form-control" placeholder="Add new tag">
+                <button class="btn btn-outline-secondary" type="button" onclick="createNewTag(event)">+</button>
             </div>
 
             <!-- List of existing tags -->
@@ -91,7 +80,7 @@
         <div class="input-group mt-2 pb-5 d-flex flex-column flex-md-row gap-2">
             <!-- Searchbar -->
             <textarea rows="1" id="searchbar" class="form-control w-auto"
-                placeholder="Filter tracks based in artist, tags and playlists ... "></textarea>
+                placeholder="Filter tracks based on artist, tags and playlists ... "></textarea>
 
             <!-- Responsive buttons -->
             <div class="btn-group">
@@ -151,8 +140,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="\Client\dashboard.js"></script>
-    <script src="\Client\search.js"></script>
+    <script src="/Client/dashboard.js"></script>
+    <script src="/Client/search.js"></script>
 </body>
 
 </html>

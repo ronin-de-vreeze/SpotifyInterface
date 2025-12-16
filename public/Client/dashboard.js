@@ -1,9 +1,13 @@
 const tracksTable = document.getElementById("tracks-table")
+
+// Addd playlists popup elemnts 
 const popup = document.getElementById("popup")
 const popupItems = document.getElementById("popup-playlists")
-const newName = document.getElementById("playlist-name").value;
+const newName = document.getElementById("popup-new-playlist-name");
 
-// Replace innerhtml with textContent
+// To store what track was last selected to add the tag to
+var selectedTrack = null;
+
 load();
 
 // Create a color based on the hash of a ID
@@ -15,24 +19,42 @@ function stringToColor(str) {
     return Math.abs(hash % 360);
 }
 
-async function addNewTag(event) {
-    const trackId = event.target.closest(".track-item").getAttribute("spotify-id");
-    const response = await fetch(`/api/${trackId}/create/${newName}`, { method: 'POST' })
+async function createNewTag(event) {
+    try {
+        // Make request to create new playlist on Spotify
+        const response = await fetch(`/api/${selectedTrack}/create/${newName.value}`, { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userid: localStorage.getItem("userid") || 0
+            })
+        })
 
-    if (response.ok) {
+        if (!response.ok) {
+            throw new Error(`Spotify API: ${response.status} ${response.statusText}`);
+        }
+
+        // If sucessful, get the returned data
         const data = await response.json();
-        event.target.closest(".track-tags").appendChild(createTagOnTrack(newName, data.id, trackId));
 
-        // add to list of included playlists
-        const current = JSON.parse(localStorage.getItem("playlists"));
-        console.log(current);
+        // Add the tag to the song
+        const newTag = createTagOnTrack(newName.value, data.id, selectedTrack);
+        event.target.closest(".track-tags").appendChild(newTag);
+
+        // Add the new tag to the local storage included list
+        const current = JSON.parse(localStorage.getItem("playlists") || "[]");
         current.push(data.id);
-        console.log(current);
         newString = JSON.stringify(current);
-        console.log(newString);
         localStorage.setItem("playlists", newString);
+
+        // Close popup, clear input field and refresh the playlists in the popup
         popup.classList.add("d-none");
-        addPlaylistsToPopup();
+        newName.value = "";
+        initializePlaylistsPopup();
+    } catch (err) {
+        console.log(`Error when creating new tag: ${err}`);
     }
 }
 
@@ -104,25 +126,37 @@ function addTrackToTable(track) {
     // Cell containing all the tags
     const tagsCell = trackitem.insertCell();
     tagsCell.classList.add("track-tags");
+
+    const addTagButton = document.createElement("button");
+    addTagButton.classList.add("bg-transparent", "border-0", "text-secondary-emphasis", "me-2"); //  , "rounded-circle", "border-0", "d-inline-flex", "align-items-center", "justify-content-center"
+    addTagButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                            </svg>`;
+    tagsCell.appendChild(addTagButton);
+
+    // Add tags to cell
     track.tags.forEach((tag) => {
         const item = createTagOnTrack(tag.name, tag.id, track.id);
         tagsCell.appendChild(item);
+    });
+
+    // Once the tracks tags cell is clicked, show the popup to add tag
+    addTagButton.addEventListener('click', async (e) => {
+        tagsCell.appendChild(popup);
+        popup.classList.remove("d-none");
+
+        selectedTrack = track.id;
     });
 }
 
 // Executed on startup
 async function load() {
     try {
-        tracksTable.addEventListener('click', async (e) => {
-            if (e.target.classList.contains("track-tags")) {
-                const trackRow = e.target.closest('.track-item');
-                const itemsCell = e.target;
-                console.log("hit");
-                itemsCell.appendChild(popup);
-                popup.classList.remove("d-none");
-                popup.setAttribute("currentID", trackRow.getAttribute("spotify-id"));
-            }
-        });
+        // Fetch user info
+        const infoRes = await fetch('/api/info');
+        if (!infoRes.ok) throw new Error(`Info fetch error: ${infoRes.status} ${infoRes.statusText}`);
+        const infoJson = await infoRes.json();
+        localStorage.setItem("userid", infoJson.id);
 
         // Fetch the tracks
         fetch('/api/tracks', {
@@ -131,9 +165,13 @@ async function load() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                included: localStorage.getItem("playlists")
+                included: localStorage.getItem("playlists") || []
             })
         }).then(data => {
+            if (!data.ok) {
+                throw new Error(`Error fetching tracks: ${data.status}: ${data}`);
+            }
+
             // When the data is sucessfully returned
             data.json().then(data_json => {
                 data_json.forEach(track => {
@@ -142,22 +180,33 @@ async function load() {
             });
         });
 
-        addPlaylistsToPopup();
+        // Add the selected and user owned playlists to the popup
+        initializePlaylistsPopup();
     } catch (err) {
         // Return errors
         console.error(err);
     }
 }
 
-function addPlaylistsToPopup() {
-    fetch('/api/playlists', { method: 'GET' }).then(data => {
-        data.json().then(data_json => {
-            popupItems.textContent = "";
-            const includedSaved = JSON.parse(localStorage.getItem("playlists"));
+function initializePlaylistsPopup() {
+    fetch('/api/playlists', { method: 'GET' }).then(response => {
+        // Check response
+        if (!response.ok) {
+            throw new Error(`Error fetching playlists: ${response.status}: ${response}`);
+        }
 
-            data_json.forEach(playlist => {
-                if (includedSaved.includes(playlist.id)) {
-                    const currentBadge = createBadge(playlist.name,
+        const userid = localStorage.getItem("userid");
+
+        // If playlists fetch sucessfully
+        response.json().then(playlists => {
+            popupItems.innerHTML = "";
+            const includedSaved = JSON.parse(localStorage.getItem("playlists") || "[]");
+
+            playlists.forEach(playlist => {
+                // If the playlist is in the included list and owned by the user
+                if (includedSaved.includes(playlist.id) && playlist.ownerid === userid) {
+                    // Create badge
+                    const playlistBadge = createBadge(playlist.name,
                         {
                             icon: // Cross icon
                                 `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
@@ -171,20 +220,22 @@ function addPlaylistsToPopup() {
                         }
                     );
 
-                    currentBadge.classList.add("playlist-badge");
-                    currentBadge.addEventListener("click", async () => {
-                        const trackid = currentBadge.closest(".track-item").getAttribute("spotify-id");
-                        console.log(`Add playlist with ID ${playlist.id} to song with id ${trackid}`)
+                    // And append to the popup
+                    playlistBadge.classList.add("playlist-badge");
+                    popupItems.appendChild(playlistBadge);
 
-                        const response = await fetch(`/api/${trackid}/add/${playlist.id}`, { method: 'POST' })
+                    // Once the tag is clicked, inform Spotify to add the tag to the track
+                    playlistBadge.addEventListener("click", async () => {
+                        const response = await fetch(`/api/${selectedTrack}/add/${playlist.id}`, { method: 'POST' })
 
                         if (response.ok) {
-                            console.log(response);
-                            currentBadge.closest(".track-tags").appendChild(createTagOnTrack(playlist.name, playlist.id, trackid));
+                            // Find the track's tags cell and append a new tag to it
+                            playlistBadge.closest(".track-tags").appendChild(createTagOnTrack(playlist.name, playlist.id, selectedTrack));
                             popup.classList.add("d-none");
+                        } else {
+                            alert("Error adding tag to track (Spotify API returned error");
                         }
                     });
-                    popupItems.appendChild(currentBadge);
                 }
             });
         });

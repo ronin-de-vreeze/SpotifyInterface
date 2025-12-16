@@ -64,7 +64,7 @@ router.post('/:trackid/create/:playlistname', async (req, res) => {
             "public": false
         }
 
-        const response = await fetch(`https://api.spotify.com/v1/users/${req.cookies.user_id}/playlists`, {
+        const response = await fetch(`https://api.spotify.com/v1/users/${req.body.userid}/playlists`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
