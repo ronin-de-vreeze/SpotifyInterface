@@ -8,6 +8,30 @@ const newName = document.getElementById("popup-new-playlist-name");
 // To store what track was last selected to add the tag to
 var selectedTrack = null;
 
+
+const searchFilters = document.getElementById("popup-playlist-search");
+searchFilters.addEventListener("input", () => {
+    const filterText = searchFilters.value.toLowerCase();
+    const playlistBadges = popupItems.querySelectorAll(".playlist-badge");
+
+    // Show all of them
+    playlistBadges.forEach(badge => {
+        badge.classList.remove("d-none");
+    });
+
+    if (filterText.trim() !== "") {
+        playlistBadges.forEach(badge => {
+            const badgeText = badge.children[0].textContent.toLowerCase();
+            
+            if (badgeText.includes(filterText)) {
+                badge.classList.remove("d-none");
+            } else {
+                badge.classList.add("d-none");
+            }
+        });
+    }
+});
+
 load();
 
 // Create a color based on the hash of a ID
