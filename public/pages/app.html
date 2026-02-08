@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <title>Rotulo</title>
+    </head>
+    <body onload="loadApp()">
+        <h1>Rotulo</h1>
+        <p id="welcome-text"></p>
+        <p id="loading-text">Loading songs ...</p>
+        <ul id="songs-list"></ul>
+
+        <script>
+            async function loadApp() {
+                const welcomeText = document.getElementById("welcome-text");
+                welcomeText.innerHTML = "Welcome! You are logged in as [User]";
+
+                await loadSongs();
+                const loadingText = document.getElementById("loading-text");
+                loadingText.innerHTML = "";
+            }
+
+            async function loadSongs() {
+                for(let i = 0; i < 10; i++) {
+                    await new Promise(r => setTimeout(r, 250));
+
+                    const songsList = document.getElementById("songs-list");
+                    const song = document.createElement("li");
+                    song.innerHTML = "Test song";
+                    songsList.appendChild(song); 
+                }
+            }
+        </script>
+    </body>
+</html>
