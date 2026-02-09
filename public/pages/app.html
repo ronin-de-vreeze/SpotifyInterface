@@ -7,6 +7,8 @@
         <p id="welcome-text"></p>
         <p id="loading-text">Loading songs ...</p>
         <ul id="songs-list"></ul>
+        <br>
+        <a href="/logout">logout</a>
 
         <script>
             async function loadApp() {
@@ -19,14 +21,32 @@
             }
 
             async function loadSongs() {
-                for(let i = 0; i < 10; i++) {
-                    await new Promise(r => setTimeout(r, 250));
+                const songsList = document.getElementById("songs-list");
 
-                    const songsList = document.getElementById("songs-list");
-                    const song = document.createElement("li");
-                    song.innerHTML = "Test song";
-                    songsList.appendChild(song); 
+                const response = await fetch("/api/data", {
+                    method: 'GET'
+                });
+
+                if(response.ok) {
+                    console.log("Data fetched succesfully");
+
+                    try {
+                        const data = await response.json();
+                        console.log(data);
+                    } catch(err) {
+                        console.log("Error unpacking fetched data")
+                    }
+                } else {
+                    console.log("Data responded with status: " + response.status);
                 }
+
+                // for(let i = 0; i < 10; i++) {
+                //     await new Promise(r => setTimeout(r, 250));
+
+                //     const song = document.createElement("li");
+                //     song.innerHTML = "Test song";
+                //     songsList.appendChild(song); 
+                // }
             }
         </script>
     </body>
