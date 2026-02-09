@@ -28,7 +28,6 @@ app.get('/', (req, res) => {
 
 app.get("/api/data", async (req, res) => {
    const fetchResponse = await spotifyFetch("GET", "me", req.cookies.access_token);
-   console.log(fetchResponse);
 
    if(fetchResponse.success) {
       res.json({ 

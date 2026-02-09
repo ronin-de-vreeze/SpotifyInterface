@@ -21,13 +21,25 @@
     <a href="/logout">logout</a>
 
     <script>
+        const statusText = document.getElementById("loading-text");
+
         async function loadApp() {
-            await loadSongs();
-            const loadingText = document.getElementById("loading-text");
-            loadingText.innerHTML = "";
+            statusText.innerHTML = "Fetching songs and playlists";
+            const [songs, playlists] = await fetchSongs();
+
+            statusText.innerHTML = "Creating tags";
+            const songsWithTags = await createTags(songs, playlists);
+
+            statusText.innerHTML = "Filling lists";
+            await createList(songs, playlists, songsWithTags);
+
+            statusText.innerHTML = "Creating tag colors";
+            await createSchema(playlists);
+
+            statusText.innerHTML = "Succes!";
         }
 
-        async function loadSongs() {
+        async function fetchSongs() {
             const songsList = document.getElementById("songs-list");
 
             const response = await fetch("/api/data", {
@@ -41,51 +53,62 @@
                         const welcomeText = document.getElementById("welcome-text");
                         welcomeText.innerHTML = `Welcome! You are logged in as ${data.data.profile.display_name}`;
 
-                        createList(data);
+                        return [data.data.songs, data.data.playlists];
                     } else {
                         console.log("Data was retrieved but the server repsonded with an error");
+                        return;
                     }
                 } catch (err) {
                     console.log("Error unpacking fetched data: " + err);
+                    return;
                 }
             } else {
                 console.log("Data responded with status: " + response.status);
+                return;
             }
         }
 
-        function createList(data) {
+        async function createTags(songs, playlists) {
+            let withTags = songs.map(song => {
+                return {
+                    id: song.id,
+                    title: song.title,
+                    artist: song.artist,
+                    tags: []
+                }
+            });
+
+            playlists.forEach(playlist => {
+                playlist.songs.forEach(song => {
+                    if (withTags[song]) {
+                        withTags[song].tags.push(playlist);
+                    }
+                })
+            });
+
+            return withTags;
+        }
+
+        async function createList(songs, playlists, songsWithTags) {
+            // Only songs
             const songsList = document.getElementById("songs-list");
-            data.data.songs.forEach(element => {
+            songs.forEach(element => {
                 const song = document.createElement("li");
                 song.innerHTML = `${element.id} | ${element.title} | ${element.artist}`;
                 songsList.append(song);
             });
 
+            // Only playlists
             const playlistsList = document.getElementById("playlists-list");
-            data.data.playlists.forEach(element => {
+            playlists.forEach(element => {
                 const playlist = document.createElement("li");
-                playlist.innerHTML = `${element.id} | ${element.title} | by you | [${element.songs.join(", ")}]`;
+                playlist.innerHTML = `${element.id} | ${element.title} | by you`;
                 playlistsList.append(playlist);
             });
 
-            let songs = data.data.songs.map(s => {
-                return {
-                    id: s.id,
-                    title: s.title,
-                    artist: s.artist,
-                    tags: []
-                }
-            })
-            data.data.playlists.forEach(playlist => {
-                playlist.songs.forEach(song => {
-                    if (songs[song]) {
-                        songs[song].tags.push(playlist);
-                    }
-                })
-            })
-
+            // Songs with tags
             const tagsList = document.getElementById("tags-list");
-            songs.forEach(element => {
+            songsWithTags.forEach(element => {
                 const tagElement = document.createElement("li");
                 const infoSpan = document.createElement("span");
 
@@ -105,11 +128,9 @@
 
                 tagsList.appendChild(tagElement);
             });
-
-            createSchema(data.data.playlists);
         }
 
-        function createSchema(playlists) {
+        async function createSchema(playlists) {
             let styleElement = document.createElement("style");
             styleElement.type = 'text/css'
 
@@ -132,6 +153,10 @@
 
             document.head.appendChild(styleElement);
         }
+    
+        const delay = (delayInms) => {
+            return new Promise(resolve => setTimeout(resolve, delayInms));
+        };
     </script>
 </body>
 
