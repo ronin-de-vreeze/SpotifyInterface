@@ -2,23 +2,59 @@
 
 <head>
     <title>Rotulo</title>
+    <style type="text/css">
+        html, body {
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        #welcome {
+            height: 20%;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+
+        #tags-list {
+            height: 80%;
+            margin: 0px;
+            padding: 0px;
+            width: 50%;
+            position: fixed;
+            top: 20%;
+            left: 0px;
+            overflow-y: scroll;
+        }
+
+        #playlists-list {
+            margin: 0px;
+            padding: 0px;
+            height: 80%;
+            width: 50%;
+            right: 0px;
+            position: fixed;
+            top: 20%;
+            overflow-y: scroll;
+        }
+    </style>
 </head>
 
 <body onload="loadApp()">
     <h1>Rotulo</h1>
-    <p id="welcome-text">Welcome!</p>
-    <p id="loading-text">Loading songs ...</p>
+    <div id="welcome">
+        <p id="welcome-text">Welcome!</p>
+        <p id="loading-text">Loading songs ...</p>
+        <br>
+        <a href="/logout">logout</a>
+    </div>
 
-    <p>Songs</p>
-    <ul id="songs-list"></ul>
+    <!-- <ol style="display: none" id="songs-list"></ol> -->
 
-    <p>Playlists</p>
-    <ul id="playlists-list"></ul>
+    <ol id="playlists-list"></ol>
 
-    <p>Tags</p>
-    <ul id="tags-list"></ul>
-    <br>
-    <a href="/logout">logout</a>
+    <ol id="tags-list"></ol>
+
+    
 
     <script>
         const statusText = document.getElementById("loading-text");
@@ -91,18 +127,18 @@
 
         async function createList(songs, playlists, songsWithTags) {
             // Only songs
-            const songsList = document.getElementById("songs-list");
-            songs.forEach(element => {
-                const song = document.createElement("li");
-                song.innerHTML = `${element.id} | ${element.title} | ${element.artist}`;
-                songsList.append(song);
-            });
+            // const songsList = document.getElementById("songs-list");
+            // songs.forEach(element => {
+            //     const song = document.createElement("li");
+            //     song.innerHTML = `${element.id} | ${element.title} | ${element.artist}`;
+            //     songsList.append(song);
+            // });
 
             // Only playlists
             const playlistsList = document.getElementById("playlists-list");
             playlists.forEach(element => {
                 const playlist = document.createElement("li");
-                playlist.innerHTML = `${element.id} | ${element.title} | by you`;
+                playlist.innerHTML = `${element.id} | ${element.title}`;
                 playlistsList.append(playlist);
             });
 

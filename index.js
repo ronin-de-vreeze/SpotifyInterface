@@ -29,12 +29,14 @@ app.get('/', (req, res) => {
 app.get("/api/data", async (req, res) => {
    const fetchResponse = await spotifyFetch("GET", "me", req.cookies.access_token);
 
-   if(fetchResponse.success) {
-      res.json({ 
+   if (fetchResponse.success) {
+      res.json({
          success: true,
          data: {
             profile: fetchResponse.data,
+            // songs: await getSongs(req.cookies.access_token), 
             songs: testData["testSongs"],
+            // playlists: await getPlaylists(req.cookies.access_token) 
             playlists: testData["testPlaylists"] 
          }
       });
@@ -43,7 +45,48 @@ app.get("/api/data", async (req, res) => {
    }
 });
 
+async function getSongs(access_token) {
+   return (await spotifyFetchPaginated("me/tracks", access_token)).map(e => {
+      return {
+         id: e.track.id,
+         title: e.track.name,
+         artist: e.track.artists[0].name
+      }
+   });;
+}
 
+async function getPlaylists(access_token) {
+   return (await spotifyFetchPaginated("me/playlists", access_token)).map(e => {
+      return {
+         id: e.id,
+         title: e.name,
+         songs: []
+      }
+   });
+}
+
+async function spotifyFetchPaginated(endpoint, access_token) {
+   let url = 'https://api.spotify.com/v1/' + endpoint + '?offset=0&limit=50';
+   let colletion = [];
+
+   const headers = {
+      method: "GET",
+      headers: { 'Authorization': 'Bearer ' + access_token, 'Content-Type': 'application/json' },
+   };
+
+   do {
+      const response = await fetch(url, headers);
+
+      if (response.ok) {
+         const data = await response.json();
+         url = data.next;
+
+         colletion.push(...data.items);
+      }
+   } while (url);
+
+   return colletion;
+}
 
 async function spotifyFetch(method, endpoint, access_token) {
    try {
@@ -51,8 +94,6 @@ async function spotifyFetch(method, endpoint, access_token) {
          method: method,
          headers: { 'Authorization': 'Bearer ' + access_token, 'Content-Type': 'application/json' },
       };
-      console.log(headers);
-
 
       const response = await fetch('https://api.spotify.com/v1/' + endpoint, headers);
 
