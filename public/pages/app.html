@@ -1,53 +1,138 @@
 <html>
-    <head>
-        <title>Rotulo</title>
-    </head>
-    <body onload="loadApp()">
-        <h1>Rotulo</h1>
-        <p id="welcome-text"></p>
-        <p id="loading-text">Loading songs ...</p>
-        <ul id="songs-list"></ul>
-        <br>
-        <a href="/logout">logout</a>
 
-        <script>
-            async function loadApp() {
-                const welcomeText = document.getElementById("welcome-text");
-                welcomeText.innerHTML = "Welcome! You are logged in as [User]";
+<head>
+    <title>Rotulo</title>
+</head>
 
-                await loadSongs();
-                const loadingText = document.getElementById("loading-text");
-                loadingText.innerHTML = "";
+<body onload="loadApp()">
+    <h1>Rotulo</h1>
+    <p id="welcome-text">Welcome!</p>
+    <p id="loading-text">Loading songs ...</p>
+
+    <p>Songs</p>
+    <ul id="songs-list"></ul>
+
+    <p>Playlists</p>
+    <ul id="playlists-list"></ul>
+
+    <p>Tags</p>
+    <ul id="tags-list"></ul>
+    <br>
+    <a href="/logout">logout</a>
+
+    <script>
+        async function loadApp() {
+            await loadSongs();
+            const loadingText = document.getElementById("loading-text");
+            loadingText.innerHTML = "";
+        }
+
+        async function loadSongs() {
+            const songsList = document.getElementById("songs-list");
+
+            const response = await fetch("/api/data", {
+                method: 'GET'
+            });
+
+            if (response.ok) {
+                try {
+                    const data = await response.json();
+                    if (data.success) {
+                        const welcomeText = document.getElementById("welcome-text");
+                        welcomeText.innerHTML = `Welcome! You are logged in as ${data.data.profile.display_name}`;
+
+                        createList(data);
+                    } else {
+                        console.log("Data was retrieved but the server repsonded with an error");
+                    }
+                } catch (err) {
+                    console.log("Error unpacking fetched data: " + err);
+                }
+            } else {
+                console.log("Data responded with status: " + response.status);
             }
+        }
 
-            async function loadSongs() {
-                const songsList = document.getElementById("songs-list");
+        function createList(data) {
+            const songsList = document.getElementById("songs-list");
+            data.data.songs.forEach(element => {
+                const song = document.createElement("li");
+                song.innerHTML = `${element.id} | ${element.title} | ${element.artist}`;
+                songsList.append(song);
+            });
 
-                const response = await fetch("/api/data", {
-                    method: 'GET'
+            const playlistsList = document.getElementById("playlists-list");
+            data.data.playlists.forEach(element => {
+                const playlist = document.createElement("li");
+                playlist.innerHTML = `${element.id} | ${element.title} | by you | [${element.songs.join(", ")}]`;
+                playlistsList.append(playlist);
+            });
+
+            let songs = data.data.songs.map(s => {
+                return {
+                    id: s.id,
+                    title: s.title,
+                    artist: s.artist,
+                    tags: []
+                }
+            })
+            data.data.playlists.forEach(playlist => {
+                playlist.songs.forEach(song => {
+                    if (songs[song]) {
+                        songs[song].tags.push(playlist);
+                    }
+                })
+            })
+
+            const tagsList = document.getElementById("tags-list");
+            songs.forEach(element => {
+                const tagElement = document.createElement("li");
+                const infoSpan = document.createElement("span");
+
+                infoSpan.innerHTML = `${element.id} | ${element.title} | ${element.artist}`;
+                tagElement.appendChild(infoSpan);
+
+                element.tags.forEach(tag => {
+                    const tagsSpan = document.createElement("tag");
+                    tagsSpan.setAttribute("spotify-id", tag.id);
+
+                    tagsSpan.addEventListener("click", () => {
+                        console.log(tag.id);
+                    });
+
+                    tagElement.appendChild(tagsSpan);
                 });
 
-                if(response.ok) {
-                    console.log("Data fetched succesfully");
+                tagsList.appendChild(tagElement);
+            });
 
-                    try {
-                        const data = await response.json();
-                        console.log(data);
-                    } catch(err) {
-                        console.log("Error unpacking fetched data")
-                    }
-                } else {
-                    console.log("Data responded with status: " + response.status);
-                }
+            createSchema(data.data.playlists);
+        }
 
-                // for(let i = 0; i < 10; i++) {
-                //     await new Promise(r => setTimeout(r, 250));
+        function createSchema(playlists) {
+            let styleElement = document.createElement("style");
+            styleElement.type = 'text/css'
 
-                //     const song = document.createElement("li");
-                //     song.innerHTML = "Test song";
-                //     songsList.appendChild(song); 
-                // }
+            let styleText = "";
+            playlists.forEach(playlist => {
+                styleText += `
+                        tag[spotify-id="${playlist.id}"]::after {
+                            content: "${playlist.title}";
+                            margin-left: 5px;
+                            background-color: red;
+                        }
+                    `;
+            });
+
+            if (styleElement.styleSheet) {
+                styleElement.styleSheet.cssText = styleText;
+            } else {
+                styleElement.appendChild(document.createTextNode(styleText));
             }
-        </script>
-    </body>
+
+            document.head.appendChild(styleElement);
+        }
+    </script>
+</body>
+
 </html>

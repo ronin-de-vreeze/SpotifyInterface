@@ -3,6 +3,7 @@ const app = express()
 const querystring = require('node:querystring');
 const path = require('path');
 app.use(require('cookie-parser')());
+const testData = require("./public/data/data.json");
 
 app.use(express.json());
 
@@ -30,11 +31,20 @@ app.get("/api/data", async (req, res) => {
    console.log(fetchResponse);
 
    if(fetchResponse.success) {
-      res.json({ data: fetchResponse.data });
+      res.json({ 
+         success: true,
+         data: {
+            profile: fetchResponse.data,
+            songs: testData["testSongs"],
+            playlists: testData["testPlaylists"] 
+         }
+      });
    } else {
-      res.json({ data: "Error" });
+      res.json({ success: false, data: "Error" });
    }
 });
+
+
 
 async function spotifyFetch(method, endpoint, access_token) {
    try {
@@ -45,7 +55,7 @@ async function spotifyFetch(method, endpoint, access_token) {
       console.log(headers);
 
 
-      const response = await fetch('https://api.spotify.com/v1/' + url, headers);
+      const response = await fetch('https://api.spotify.com/v1/' + endpoint, headers);
 
       if (!response.ok) {
          return {
