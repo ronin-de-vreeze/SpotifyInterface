@@ -1,72 +1,126 @@
+
 const express = require('express');
-const app = express()
 const querystring = require('node:querystring');
 const path = require('path');
-app.use(require('cookie-parser')());
 const testData = require("./public/data/data.json");
 
+const app = express()
+app.use(require('cookie-parser')());
 app.use(express.json());
 
+var api = require('./api.js');
+
+// Spotify app credentials TODO move to .env file
 var client_id = '7354254814454ecbbef62bcc4d680591';
 var redirect_uri = 'http://127.0.0.1:3000/callback';
 var client_secret = '5beb5d19d27b49688a13a3bdbf65bdb3';
 var scope = 'user-read-private user-read-playback-state playlist-read-private user-library-read user-modify-playback-state playlist-modify-public playlist-modify-private';
 
+// Root endpoint 
 app.get('/', (req, res) => {
    if (req.cookies.access_token) {
-      // Logged in
+      // Logged in, redirect to the app
       res.redirect("/app");
    } else {
-      // Not logged in
+      // Not logged in, show the login page 
       res.sendFile(path.join(__dirname + "/public/pages/home.html"), null, function (err) {
-         if (err) {
-            console.error('Error sending file:', err);
-         }
+         if (err) { console.error('Error sending file:', err); }
       });
    }
 });
 
-app.get("/api/data", async (req, res) => {
-   const fetchResponse = await spotifyFetch("GET", "me", req.cookies.access_token);
+// Login page endpoint, redirect to Spotify Auth
+app.get('/login', (req, res) => {
+   res.redirect(
+      'https://accounts.spotify.com/authorize?' +
+      querystring.stringify({
+         response_type: 'code',
+         client_id,
+         scope,
+         redirect_uri
+      }));
+});
+
+// Callback nedpoint, get code from url and request token
+app.get('/callback', async (req, res) => {
+   const code = req.query.code;
+   const response = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+         'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64'),
+         'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: querystring.stringify({
+         code,
+         redirect_uri,
+         grant_type: 'authorization_code'
+      })
+   });
+
+   const data = await response.json();
+   if (data.error) {
+      console.log("Error with token JSON");
+      return res.status(400).send('Token exchange failed: ' + data.error_description);
+   }
+
+   // Save the access token in the cookies and redirect to app
+   res.cookie('access_token', data.access_token, { httpOnly: true, sameSite: 'lax' });
+   res.redirect(`/app`);
+});
+
+// App page, if accessed by not logged in, redirect to login
+app.get("/app", (req, res) => {
+   if (req.cookies.access_token) {
+      // Logged in
+      res.sendFile(path.join(__dirname + "/public/pages/app.html"), null, function (err) {
+         if (err) { console.error('Error sending file:', err); }
+      });
+   } else {
+      // Not logged in
+      res.redirect("/login");
+   }
+});
+
+// Logout by clearing stored token
+app.get("/logout", (req, res) => {
+   res.clearCookie('access_token');
+   res.redirect("/");
+});
+
+// Return some info about the user, name etc...
+app.get("/api/info", async (req, res) => {
+   const fetchResponse = await api.spotifyFetch("GET", "me", req.cookies.access_token);
 
    if (fetchResponse.success) {
       res.json({
          success: true,
          data: {
-            profile: fetchResponse.data,
-            // songs: await getSongs(req.cookies.access_token), 
-            songs: testData["testSongs"],
-            // playlists: await getPlaylists(req.cookies.access_token) 
-            playlists: testData["testPlaylists"] 
+            name: fetchResponse.data.display_name
          }
       });
    } else {
-      res.json({ success: false, data: "Error" });
+      res.json({
+         success: false,
+         data: "Error encountered and could not return correct data"
+      });
    }
 });
 
-async function getSongs(access_token) {
-   return (await spotifyFetchPaginated("me/tracks", access_token)).map(e => {
-      return {
-         id: e.track.id,
-         title: e.track.name,
-         artist: e.track.artists[0].name
-      }
-   });;
-}
-
-async function getPlaylists(access_token) {
-   return (await spotifyFetchPaginated("me/playlists", access_token)).map(e => {
+// Return all the playlists owned by the user
+app.get("/api/playlists", async (req, res) => {
+   const playlists = (await spotifyFetchPaginated("me/playlists", req.cookies.access_token)).map(e => {
       return {
          id: e.id,
          title: e.name,
-         songs: []
+         owner: e.owner.display_name
       }
    });
-}
+
+   res.json(playlists);
+});
 
 async function spotifyFetchPaginated(endpoint, access_token) {
-   let url = 'https://api.spotify.com/v1/' + endpoint + '?offset=0&limit=50';
+   let url = 'https://api.spotify.com/v1/' + endpoint; // + '?offset=0&limit=50';
    let colletion = [];
 
    const headers = {
@@ -88,108 +142,28 @@ async function spotifyFetchPaginated(endpoint, access_token) {
    return colletion;
 }
 
-async function spotifyFetch(method, endpoint, access_token) {
-   try {
-      const headers = {
-         method: method,
-         headers: { 'Authorization': 'Bearer ' + access_token, 'Content-Type': 'application/json' },
-      };
+app.post("/api/songs", async (req, res) => {
+   urls = [...(req.body.map((id) => { return `playlists/${id}/items`; }))] // 'me/tracks',
+   collection = {}
 
-      const response = await fetch('https://api.spotify.com/v1/' + endpoint, headers);
+   for(let i = 0; i < urls.length; i++) {
 
-      if (!response.ok) {
-         return {
-            success: false,
-            data: 'Error with Spotify request: ' + response.status
-         };
-      }
+      const results = await spotifyFetchPaginated(urls[i], req.cookies.access_token)
 
-      const data = await response.json();
-      return {
-         success: true,
-         data: data
-      };
-   } catch (err) {
-      return {
-         success: false,
-         data: 'network request error: ' + err
-      };
-   }
-}
-
-app.get('/login', (req, res) => {
-   res.redirect(
-      'https://accounts.spotify.com/authorize?' +
-      querystring.stringify({
-         response_type: 'code',
-         client_id,
-         scope,
-         redirect_uri
-      }));
-});
-
-app.get('/callback', async (req, res) => {
-   const code = req.query.code;
-   const response = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-         'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64'),
-         'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: querystring.stringify({
-         code,
-         redirect_uri,
-         grant_type: 'authorization_code'
-      })
-   });
-
-
-
-   const data = await response.json();
-   if (data.error) {
-      console.log("Error with token JSON");
-      return res.status(400).send('Token exchange failed: ' + data.error_description);
-   }
-
-
-   const id_res = await fetch('https://api.spotify.com/v1/me', {
-      method: 'GET',
-      headers: {
-         'Authorization': 'Bearer ' + data.access_token,
-      }
-   });
-
-   const id_data = await id_res.json();
-   if (id_data.error) {
-      console.log("Error with token JSON");
-      return res.status(400).send('Token exchange failed: ' + data.error_description);
-   }
-
-   res.cookie('access_token', data.access_token, { httpOnly: true, sameSite: 'lax' });
-   res.cookie('user_id', id_data.id, { httpOnly: true, sameSite: 'lax' });
-
-   // Redirect to your app UI with user_id param
-   res.redirect(`/`);
-});
-
-app.get("/app", (req, res) => {
-   if (req.cookies.access_token) {
-      // Logged in
-      res.sendFile(path.join(__dirname + "/public/pages/app.html"), null, function (err) {
-         if (err) {
-            console.error('Error sending file:', err);
+      results.forEach(result => {
+         if (result.track.id in collection) {
+            collection[result.track.id].tags.push(req.body[i]);
+         } else {
+            collection[result.track.id] = { 
+               name: result.track.name,
+               artist: result.track.artists[0].name,
+               tags: [req.body[i]]
+            }
          }
       });
-   } else {
-      // Not logged in
-      res.redirect("/login");
    }
-});
-
-app.get("/logout", (req, res) => {
-   res.clearCookie('access_token');
-   res.clearCookie('user_id');
-   res.redirect("/");
+   console.log(collection);
+   res.json(collection);
 });
 
 app.use(express.static(__dirname + '/public'));
