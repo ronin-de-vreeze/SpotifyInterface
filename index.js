@@ -207,16 +207,31 @@ async function getPlaylists() {
 
 async function fetchSongs(playlists) {
     trackView.key('a', async function (ch, key) {
-        logger.log(trackView.getSelectedTags());
-        // TODO FILTER OUT THE ONES THAT ARE PRESENT ALREADY
-        const result = await trackView.selectPlaylist(playlists);
-        logger.log(result);
-        // TODO MAKE THE API CALL TO ADD
+        const alreadyPresent = trackView.getSelectedTags().map(el => el.id);
+        const filteredPlaylists = playlists.filter(el => !(alreadyPresent.includes(el.id)));
+        const resultingPlaylist = await trackView.selectPlaylist(filteredPlaylists);
+        const currentTrack = trackView.getSelected();
+        
+        try {
+            const response = await axios({
+                method: "POST",
+                headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+                data: {"uris": [ "spotify:track:" + currentTrack.id ]},
+                url: `https://api.spotify.com/v1/playlists/${resultingPlaylist.id}/items`
+            });
+
+            if(response.statusText = "OK") {
+                trackView.addTagToCurrent(resultingPlaylist);
+            }
+            logger.log(`Attempt to add ${resultingPlaylist.name} to ${currentTrack.id} finished with status ${response.status}`);
+        } catch (err) {
+            logger.log(err);
+        }
     });
 
     trackView.key('r', async function (ch, key) {
         const tags = trackView.getSelectedTags();
-        const playlist_id = (await trackView.selectPlaylist(tags)).id;
+        const playlist = (await trackView.selectPlaylist(tags));
         const song_id = trackView.getSelectedId();
 
         try {
@@ -224,12 +239,12 @@ async function fetchSongs(playlists) {
                 method: "DELETE",
                 headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
                 data: {"items": [{  "uri": "spotify:track:" + song_id }]},
-                url: `https://api.spotify.com/v1/playlists/${playlist_id}/items`
+                url: `https://api.spotify.com/v1/playlists/${playlist.id}/items`
             });
 
             logger.log(`Attepted to remove the tags finsihed with code ${response.status}`);
             if(response.statusText = "OK") {
-                trackView.removeCurrent();
+                trackView.removeTagFromCurrent(playlist);
             }
         } catch (err) {
             logger.log(err);
@@ -258,12 +273,10 @@ var trackView = new trackList({
     height: '80%',
 });
 
-
-
-
-
 trackView.key('p', async function (ch, key) {
     const id = trackView.getSelectedId();
+    logger.log(trackView.selected);
+    logger.log(trackView.getSelected());
 
     try {
         const response_queue = await axios({

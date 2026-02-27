@@ -8,3 +8,11 @@ x to export to playlist,
 
 # Roadmap
 r to open radio of a song
+
+# Done
+
+# Todo
+- Add the liked songs option
+- Advanced search and saving filters
+- Multiselection
+- Create new playlists/tags and included them

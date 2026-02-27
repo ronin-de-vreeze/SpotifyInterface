@@ -110,6 +110,18 @@ class trackList extends blessed.list {
         this.fillTracks();
     }
 
+    addTagToCurrent(playlist) {
+        this.getSelected().tags.push(playlist);
+        this.fillTracks();
+    }
+
+
+    removeTagFromCurrent(playlist) {
+        let selectedItem = this.getSelected();
+        selectedItem.tags = selectedItem.tags.filter((el) => el.id != playlist.id);
+        this.fillTracks();
+    }
+
     getSelectedTags() {
         return this.getSelected().tags;
     }
