@@ -17,6 +17,7 @@ class playlistList extends blessed.box {
             width: '50%',
             height: '100%',
             hidden: true,
+            label: "Excluded",
 
             border: { type: 'line' },
 
@@ -43,6 +44,7 @@ class playlistList extends blessed.box {
             left: '50%',
             height: '100%',
             hidden: true,
+            label: "Included",
 
             border: { type: 'line' },
             style: {

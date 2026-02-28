@@ -93,20 +93,71 @@ class trackList extends blessed.list {
             }
         });
 
-        popup.setItems(playlists.map(el => el.name));
+        popup.setItems(['New playlist', ...playlists.map(el => el.name)]);
         popup.focus();
 
         return new Promise((resolve, reject) => {
             popup.key('enter', async (ch, key) => {
                 this.remove(popup);
-                resolve(playlists[popup.selected]);
+                if (popup.selected == 0) {
+                    resolve(null);
+                } else {
+                    resolve(playlists[popup.selected - 1]);
+                }
             });
         });
     }
 
+    async createPlaylist() {
+        let popup = blessed.box({
+            parent: this,
+            keys: true,
+            interactive: true,
+
+            width: '50%',
+            height: '50%',
+            top: 'center',
+            left: 'center',
+            label: 'Name your new playlist',
+            border: { type: 'line' },
+            content: "Test",
+
+            style: {
+                focus: {
+                    border: {
+                        fg: 'red',
+                    }
+                },
+                selected: {
+                    bg: 'blue',
+                    fg: 'white',
+                    bold: true
+                }
+            }
+        });
+        popup.focus();
+
+        return new Promise((resolve, reject) => {
+            popup.on('keypress', (char, key) => {
+                if (key.full == "enter") {
+                    this.remove(popup);
+                    resolve(popup.content);
+                } else if (key.full == "backspace") {
+                    popup.content = popup.content.slice(0, -1);
+                    this.parent.render();
+                } else if (char) {
+                    popup.content += char;
+                    this.parent.render();
+                }
+            });
+        });
+    }
+
+
+
     removeCurrent() {
         const currentID = this.getSelectedId();
-        this.tracks = this.tracks.filter((el) => el.id != currentID );
+        this.tracks = this.tracks.filter((el) => el.id != currentID);
         this.fillTracks();
     }
 
