@@ -1,5 +1,7 @@
 var blessed = require('neo-blessed');
 const axios = require('axios');
+const { getTracks, playSong, addTrackToNewPlaylist, addTrackToPlaylist, loadSavedPlaylistPreferences } = require("./api");
+const handler = require("./handler")
 
 class trackList extends blessed.list {
     constructor(options) {
@@ -63,6 +65,57 @@ class trackList extends blessed.list {
                 this.render();
             }
         });
+
+        this.key('p', async function (ch, key) {
+            const id = this.getSelectedId();
+            playSong(id);
+        });
+
+        // this.key('r', async function (ch, key) {
+        //     const tags = this.getSelectedTags();
+        //     const playlist = (await this.selectPlaylist(tags));
+        //     const song_id = this.getSelectedId();
+
+        //     try {
+        //         const response = await axios({
+        //             method: "DELETE",
+        //             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        //             data: { "items": [{ "uri": "spotify:track:" + song_id }] },
+        //             url: `https://api.spotify.com/v1/playlists/${playlist.id}/items`
+        //         });
+
+        //         logger.log(`Attepted to remove the tags finsihed with code ${response.status}`);
+        //         if (response.statusText = "OK") {
+        //             this.removeTagFromCurrent(playlist);
+        //         }
+        //     } catch (err) {
+        //         logger.log(err);
+        //     }
+
+        // });
+
+        // Add a playlists (tag) to a song
+        
+        this.key('a', async function(ch, key) {
+            const allTracks = handler.getPlaylists();
+            this.parent.log(allTracks);
+            const alreadyPresent = this.getSelectedTags().map(el => el.id);
+            const filteredPlaylists = allTracks.filter(el => !(alreadyPresent.includes(el.id)));
+            const resultingPlaylist = await this.selectPlaylist(filteredPlaylists);
+
+            const currentTrack = this.getSelected();
+
+            if (resultingPlaylist) {
+                await addTrackToPlaylist(currentTrack.id, resultingPlaylist);
+                this.addTagToCurrent(resultingPlaylist);
+                this.parent.log(resultingPlaylist);
+            } else {
+                const name = await this.createPlaylist();
+                const newPlaylist = await addTrackToNewPlaylist(currentTrack.id, name);
+                this.addTagToCurrent(newPlaylist);
+                this.parent.log(newPlaylist);
+            }
+        });
     }
 
     async selectPlaylist(playlists) {
@@ -120,7 +173,6 @@ class trackList extends blessed.list {
             left: 'center',
             label: 'Name your new playlist',
             border: { type: 'line' },
-            content: "Test",
 
             style: {
                 focus: {
@@ -152,8 +204,6 @@ class trackList extends blessed.list {
             });
         });
     }
-
-
 
     removeCurrent() {
         const currentID = this.getSelectedId();
@@ -194,7 +244,11 @@ class trackList extends blessed.list {
         this.parent.render();
     }
 
-    show() {
+    async show(playlists) {
+        // Get the songs in all of the playlists
+        const songs = await getTracks(playlists);
+        this.setItems(songs);
+
         this.searchbar.show();
         this.focus();
         super.show();

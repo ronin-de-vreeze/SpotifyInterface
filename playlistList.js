@@ -1,14 +1,18 @@
 var blessed = require('neo-blessed');
+const { setPlaylists, spotifyFetchPaginated, loadSavedPlaylistPreferences } = require("./api");
+const handler = require("./handler")
+const fs = require("fs").promises;
 
 class playlistList extends blessed.box {
-    constructor(options, callback) {
+    constructor(options) {
+        // Create self
         options.keys = true;
         options.interactive = true;
         options.hidden = true;
         options.tags = true;
-
         super(options);
 
+        // Create list with excluded songs
         this.excluded = blessed.list({
             keys: true,
             interactive: true,
@@ -28,13 +32,14 @@ class playlistList extends blessed.box {
                     }
                 },
                 selected: {
-                    bg: 'blue', // Or any color that stands out
+                    bg: 'blue',
                     fg: 'white',
                     bold: true
                 }
             }
         });
 
+        // Create list for included songs
         this.included = blessed.list({
             keys: true,
             interactive: true,
@@ -80,15 +85,38 @@ class playlistList extends blessed.box {
             this.playlists.filter(el => el.included == false)[this.excluded.selected].included = true
             this.fillPlaylists();
         });
+    }
 
-        
-        // Move to track screen
-        this.excluded.key('enter', async (ch, key) => {
-            callback(this.getIncludedPlaylists());
+    // Set the included playlists id's to the settings.json file
+    async savePlaylistPreferences() {
+        try {
+            // Update info
+            const data = await fs.readFile('./settings.json', 'utf8');
+            const updated = JSON.parse(data);
+            updated.includedPlaylists = this.getIncludedPlaylists().map(el => { return el.id; });
+
+            // Write to file
+            await fs.writeFile('./settings.json', JSON.stringify(updated));
+        } catch (err) {
+            this.parent.log("Error writing to settings.json: ", err);
+        }
+    }
+
+    // Fetch all the playlists from the Spotify API, returns { id, name, owner, included }
+    async fetchPlaylists() {
+        // Get the preferences stored locally
+        const includedPlaylists = await loadSavedPlaylistPreferences();
+
+        const playlists = await spotifyFetchPaginated("me/playlists", (item) => {
+            return {
+                id: item.id,
+                name: item.name,
+                owner: item.owner.display_name,
+                included: includedPlaylists.includes(item.id)
+            }
         });
-        this.included.key('enter', async (ch, key) => {
-            callback(this.getIncludedPlaylists());
-        });
+
+        return playlists;
     }
 
     getIncludedPlaylists() {
@@ -103,19 +131,31 @@ class playlistList extends blessed.box {
     }
 
     // Child children and fill the lists, then focus on the left list
-    show() {
+    async show() {
+        this.playlists = await this.fetchPlaylists();
+
         this.excluded.show();
         this.included.show();
         this.excluded.focus();
 
         this.fillPlaylists();
-
         super.show();
-    }
 
-    // Store the playlists objects {name, id, owner, included}
-    setItems(playlists) {
-        this.playlists = playlists;
+        return new Promise((resolve) => {
+            // Move to track screen
+            this.excluded.key('enter', async (ch, key) => {
+                // callback(this.getIncludedPlaylists());
+                this.savePlaylistPreferences();
+                handler.setPlaylists(this.getIncludedPlaylists());
+                resolve(this.getIncludedPlaylists());
+            });
+            this.included.key('enter', async (ch, key) => {
+                // callback(this.getIncludedPlaylists());
+                this.savePlaylistPreferences();
+                handler.setPlaylists(this.getIncludedPlaylists());
+                resolve(this.getIncludedPlaylists());
+            });
+        });
     }
 }
 
