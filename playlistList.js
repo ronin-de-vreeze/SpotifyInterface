@@ -1,7 +1,5 @@
 var blessed = require('neo-blessed');
-const { setPlaylists, spotifyFetchPaginated, loadSavedPlaylistPreferences } = require("./api");
-const handler = require("./handler")
-const fs = require("fs").promises;
+const appInterface = require("./interface")
 
 class playlistList extends blessed.box {
     constructor(options) {
@@ -76,47 +74,17 @@ class playlistList extends blessed.box {
 
         // Exclude playlist
         this.included.key('left', async (ch, key) => {
-            this.playlists.filter(el => el.included == true)[this.included.selected].included = false;
+            let item = this.playlists.filter(el => el.included == true);
+            if(item.length > 0) { item[this.included.selected].included = false; }
             this.fillPlaylists();
         });
 
         // Include playlist
         this.excluded.key('right', async (ch, key) => {
-            this.playlists.filter(el => el.included == false)[this.excluded.selected].included = true
+            let item = this.playlists.filter(el => el.included == false);
+            if(item.length > 0) { item[this.excluded.selected].included = true; }
             this.fillPlaylists();
         });
-    }
-
-    // Set the included playlists id's to the settings.json file
-    async savePlaylistPreferences() {
-        try {
-            // Update info
-            const data = await fs.readFile('./settings.json', 'utf8');
-            const updated = JSON.parse(data);
-            updated.includedPlaylists = this.getIncludedPlaylists().map(el => { return el.id; });
-
-            // Write to file
-            await fs.writeFile('./settings.json', JSON.stringify(updated));
-        } catch (err) {
-            this.parent.log("Error writing to settings.json: ", err);
-        }
-    }
-
-    // Fetch all the playlists from the Spotify API, returns { id, name, owner, included }
-    async fetchPlaylists() {
-        // Get the preferences stored locally
-        const includedPlaylists = await loadSavedPlaylistPreferences();
-
-        const playlists = await spotifyFetchPaginated("me/playlists", (item) => {
-            return {
-                id: item.id,
-                name: item.name,
-                owner: item.owner.display_name,
-                included: includedPlaylists.includes(item.id)
-            }
-        });
-
-        return playlists;
     }
 
     getIncludedPlaylists() {
@@ -132,28 +100,27 @@ class playlistList extends blessed.box {
 
     // Child children and fill the lists, then focus on the left list
     async show() {
-        this.playlists = await this.fetchPlaylists();
-
         this.excluded.show();
         this.included.show();
         this.excluded.focus();
+        super.show();
+
+        this.playlists = await appInterface.fetchPlaylists();
+        this.parent.log(this.playlists);
 
         this.fillPlaylists();
-        super.show();
 
         return new Promise((resolve) => {
             // Move to track screen
             this.excluded.key('enter', async (ch, key) => {
-                // callback(this.getIncludedPlaylists());
-                this.savePlaylistPreferences();
-                handler.setPlaylists(this.getIncludedPlaylists());
+                appInterface.savePlaylists(this.getIncludedPlaylists());
                 resolve(this.getIncludedPlaylists());
+                this.hide();
             });
             this.included.key('enter', async (ch, key) => {
-                // callback(this.getIncludedPlaylists());
-                this.savePlaylistPreferences();
-                handler.setPlaylists(this.getIncludedPlaylists());
+                appInterface.savePlaylists(this.getIncludedPlaylists());
                 resolve(this.getIncludedPlaylists());
+                this.hide();
             });
         });
     }

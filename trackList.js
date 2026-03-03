@@ -1,7 +1,5 @@
 var blessed = require('neo-blessed');
-const axios = require('axios');
-const { getTracks, playSong, addTrackToNewPlaylist, addTrackToPlaylist, loadSavedPlaylistPreferences } = require("./api");
-const handler = require("./handler")
+const appInterface = require("./interface")
 
 class trackList extends blessed.list {
     constructor(options) {
@@ -68,7 +66,7 @@ class trackList extends blessed.list {
 
         this.key('p', async function (ch, key) {
             const id = this.getSelectedId();
-            playSong(id);
+            appInterface.playSong(id);
         });
 
         // this.key('r', async function (ch, key) {
@@ -94,26 +92,23 @@ class trackList extends blessed.list {
 
         // });
 
-        // Add a playlists (tag) to a song
-        
+        // Add a playlists (tag) to a song 
         this.key('a', async function(ch, key) {
-            const allTracks = handler.getPlaylists();
-            this.parent.log(allTracks);
-            const alreadyPresent = this.getSelectedTags().map(el => el.id);
+            const allTracks = appInterface.getIncludedPlaylists();
+            const alreadyPresent = this.getSelected().tags.map(el => el.id);
             const filteredPlaylists = allTracks.filter(el => !(alreadyPresent.includes(el.id)));
-            const resultingPlaylist = await this.selectPlaylist(filteredPlaylists);
+            const choise = await this.selectPlaylist(filteredPlaylists);
 
             const currentTrack = this.getSelected();
 
-            if (resultingPlaylist) {
-                await addTrackToPlaylist(currentTrack.id, resultingPlaylist);
-                this.addTagToCurrent(resultingPlaylist);
-                this.parent.log(resultingPlaylist);
+            if (choise) {
+                await appInterface.addTrackToPlaylist(currentTrack.id, choise);
+                this.addTagToCurrent(choise);
             } else {
                 const name = await this.createPlaylist();
-                const newPlaylist = await addTrackToNewPlaylist(currentTrack.id, name);
+                const newPlaylist = await appInterface.createNewPlaylist(name);
+                await appInterface.addTrackToPlaylist(currentTrack.id, newPlaylist);
                 this.addTagToCurrent(newPlaylist);
-                this.parent.log(newPlaylist);
             }
         });
     }
@@ -205,27 +200,22 @@ class trackList extends blessed.list {
         });
     }
 
-    removeCurrent() {
-        const currentID = this.getSelectedId();
-        this.tracks = this.tracks.filter((el) => el.id != currentID);
-        this.fillTracks();
-    }
+    // removeCurrent() {
+    //     const currentID = this.getSelectedId();
+    //     this.tracks = this.tracks.filter((el) => el.id != currentID);
+    //     this.fillTracks();
+    // }
 
     addTagToCurrent(playlist) {
         this.getSelected().tags.push(playlist);
         this.fillTracks();
     }
 
-
-    removeTagFromCurrent(playlist) {
-        let selectedItem = this.getSelected();
-        selectedItem.tags = selectedItem.tags.filter((el) => el.id != playlist.id);
-        this.fillTracks();
-    }
-
-    getSelectedTags() {
-        return this.getSelected().tags;
-    }
+    // removeTagFromCurrent(playlist) {
+    //     let selectedItem = this.getSelected();
+    //     selectedItem.tags = selectedItem.tags.filter((el) => el.id != playlist.id);
+    //     this.fillTracks();
+    // }
 
     getSelected() {
         return this.filtered[this.selected];
@@ -245,18 +235,13 @@ class trackList extends blessed.list {
     }
 
     async show(playlists) {
-        // Get the songs in all of the playlists
-        const songs = await getTracks(playlists);
-        this.setItems(songs);
-
+        super.show();
         this.searchbar.show();
         this.focus();
-        super.show();
-    }
 
-    setItems(tracks) {
-        this.tracks = tracks;
-        this.fillTracks();
+        // Get the songs in all of the playlists
+        this.tracks = await appInterface.getTracks(playlists);
+        this.fillTracks();       
     }
 }
 
